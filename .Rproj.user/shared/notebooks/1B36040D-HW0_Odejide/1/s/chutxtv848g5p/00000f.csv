@@ -1,0 +1,3 @@
+"0","ggplot(data = credit) +"
+"0","  geom_line(aes(x = Income, y = Rating)) +"
+"0","  facet_wrap(~Gender)"

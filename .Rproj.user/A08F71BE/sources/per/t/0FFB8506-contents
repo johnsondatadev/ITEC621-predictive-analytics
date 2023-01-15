@@ -1,0 +1,231 @@
+---
+title: "KSB-999 HW0 - R Overview for Business Analytics"
+subtitle: "Modified by Johnson Odejide"
+author: "J. Alberto Espinosa"
+date: "January 12, 2023"
+output:
+  word_document:
+   toc: true
+   toc_depth: 2
+---
+## Overview
+
+The goal of this homework **HW0** is to get you prepared to succeed in **ITEC 620 Business Insights from Analytics** and **ITEC 621 Predictive Analytics**. R will be used in those courses as the main tools for analytics. Parts of This homework are somewhat similar to HW1 in ITEC 621, so once you complete this HW0, you will be in a much better position to complete ITEC 621's HW1 and succeed in that course. The hardest thing in ITEC 621 is to learn the basics of predictive modeling and R at the same time. If you are somewhat fluent in the R syntax, you will be able to focus on nuances of predictive modeling.
+
+## R Markdown
+
+R Markdown is a package that allows you to write R code and prepare an analytics report in a single file. To use R Markdown, you first need to install it in your computer using the command `install.packages("rmarkdown")`. If you have not done this yet, go to the **R Console** and install R Markdown. Once you have done this, you can create R Markdown files from the File -> New File menu.
+
+When you create an R Markdown file, it will look like text comingled with R code. You will see a button option named **Knit** in your tool bar. Once you are done with all the coding, click on the **Knit** button and R Markdown will knit a Word, HTML, PDF or PowerPoint document for you, depending on the output type you specified, with all your typed text and R results.
+
+For this practice homework, I have provided a blank R Markdown file named **HW0_YourLastName.Rmd**. Download this file and rename it with your last name, and then do all your coding there. If you feel more comfortable with a plain R Script, just complete this homework in your **HW0_YourLastName.R** script. But I encourage you to try to copy your R code to the appropriate sections of the R Markdown file so that you get used to it, because you will be using this all the time in ITEC 621.
+
+R Markdown contains three main types of content:
+
+1. The **YAML** (YAML Ain't Markup Language) header, which is where you place the title, author, date, type of output, etc. It is at the top of the R Markdown file and starts and ends with `---`. I suggest using an output type `word_document`. HTML works well, but blackboard will not read HTML files submitted by students (for security reasons).
+
+2. **Markup** sections, which is where you type any text you wish, which will show up as typed text. You will learn these later. 
+
+3. **Code chunks**: which is where you write your R code. An R code chunk starts with a **\```{r}** and ends with a **\```**.
+
+I recommend that you first create an R Script called **HW0_YourLastName.R** to try your R code. Once you are satisfied that the R code is working fine, then copy/paste the respective code segments to an R Markdown file named **HW0_YourLastName.Rmd**. I recommend using the template I provided on Blackboard.
+
+Your knitted file must:
+
+- Display all your R commands (leave `echo=T` in the global options; `echo=F` suppresses the R code)
+- Display the resulting **R output results**
+- Contain anay necessary text and explanations, as needed; and
+- Be formatted for good readability and in a business like manner
+- Be in the same order as the questions and with the corresponding question numbers
+
+## Submission: 
+
+Knit a Word document with your R Markdown file and knitted to your **.Rmd** file. You don't need to submit this on Blackboard for KSB-999. But keep your results to be discussed in ITEC 621, where you will complete a related homework and get the solution.
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=T, warning=F, message=F)
+```
+
+## Questions
+
+1. Write a simple R function named **Area()** that takes 2 values as parameters (representing the two sides of a rectangle) and returns the product of the two values (representing the rectangle's area. Then use the functions print() and paste() to output this result: "The area of a rectangle of sides 6x4 is 24", where 24 is calculated with the Area() function you just created
+
+```{r}
+# Area of a rectangle
+Area <- function(length, breadth){
+  area <- length * breadth
+  area
+}
+
+# Using the function
+length <- 6
+breadth <- 4
+print(paste("The area of a rectangle of sides ", length, 
+            "x", breadth, " is ", Area(length, breadth)))
+
+```
+
+2. Write a simple **for loop** for i from 1 to 10. In each loop pass, compute the area of a rectangle of sides i and i*2 (i.e., all rectangles have one side double the lenght than the other) and for each of the 10 rectangles display "The area of an 1 x 2 rectangle is 2" for i=1, "The area of an 2 x 4 rectangle is 8", and so on.
+
+```{r}
+for(i in 1:10){
+  print(paste("The area of a rectangle of sides ", i, 
+              "x", (i*2), " is ", Area(i, i*2)))
+}
+```
+
+3. Copy the Credit.csv data file to your working directory:
+- Then read the Credit.csv data table into an object named "Credit"
+- List the top 6 rows of the table
+- List the first 5 columns of the top 5 rows
+
+```{r}
+credit <- read.csv("../../../Dataset/Credit.csv")
+head(credit)
+head(credit, 5)[, 1:5]
+```
+
+4. Create a simple linear model object with the lm() function to fit credit rating as a function of all remaining variables as predictors and: 
+- Save the results in an object called "fit.rating"; 
+- Display the model summary results (summary() function)
+
+```{r}
+fit.rating <- lm(Rating ~ ., data = credit)
+summary(fit.rating)
+```
+
+5. Write a simple linear model to predict credit ratings using the
+most significant predictors: Income, Limit, Cards, MarriedYes, Balance; and
+- Display the regression summary results 
+
+```{r}
+fit.rating.sig_preds <- lm(Rating ~ Income + Limit + Cards + Married + Balance,
+                           data = credit)
+summary(fit.rating.sig_preds)
+```
+
+6. Display the object class for Gender (i.e., Credit$Gender), Income and Cards
+
+```{r}
+class(credit$Gender)
+
+class(credit$Income)
+
+class(credit$Cards)
+```
+
+7. Briefly answer: what do these classes mean?
+
+* _character_ is a data type used to represent strings or character variables in R that contains letters.
+
+* _numeric_ is used to represent variables that can contain numbers that can include both decimals
+
+* _integer_ is used to represent variables that contains numbers but not including decimals.
+
+8. Create a vector named "Income.vect" with data from the Income column
+- Display the first 6 values of this vector
+
+```{r}
+Income.vect = c(credit$Income)
+head(Income.vect)
+```
+
+9. Compute and display (separately) the mean, minimum, maximum, standard deviation and variance for all the values in this income vector
+
+```{r}
+# Mean Income
+mean(Income.vect)
+
+# Minimum Income
+min(Income.vect)
+
+# Maximum Income
+max(Income.vect)
+
+# Standard Devition of Income
+sd(Income.vect)
+
+# Variance of Income
+var(Income.vect)
+```
+
+10. Create a vector called Income.stats with 5 values you computed above and
+- Display these Income.stats values
+
+```{r}
+Income.stats <- c(mean(Income.vect), min(Income.vect), max(Income.vect), 
+                  sd(Income.vect), var(Income.vect))
+Income.stats
+```
+
+11. Now give these elements these names: "Mean", "Min", "Max", "StDev", and "Var" and
+- Display these values with their names
+
+```{r}
+names(Income.stats) <- c("Mean", "Min", "Max", "StDev", "Var")
+Income.stats
+```
+
+12. Suppose that you want to adjust income for inflation by 5%. Multiply
+the income values in this vector by 1.05 and 
+- Display the first 6 records of this computation
+
+```{r}
+head(Income.vect * 1.05)
+```
+
+13. Display a boxplot for the predictor "Income"
+
+```{r}
+boxplot(credit$Income)
+```
+
+14. Display a boxplot of "Income" by "Gender". No need to respond, but can you tell if there is gender income inequality in this data set?
+
+```{r}
+boxplot(credit$Income ~ credit$Gender)
+```
+
+15. Plot Credit Rating (Y axis) against Income (X axis), with respective labels "Income" and "Credit Rating
+
+```{r}
+plot(credit$Rating ~ credit$Income, xlab = "Income", ylab = "Credit Rating")
+```
+
+16. Display a histogram for Credit Rating, with the main title "Credit
+Rating Histogram" and X label "Rating"
+
+```{r}
+hist(credit$Rating, main = "Credit Rating Histogram", xlab = "Rating")
+```
+
+17. Check the qqplot (using the qqnorm() function and qqline() to evaluate
+the normality of credit rating). 
+
+```{r}
+qqnorm(credit$Rating)
+qqline(credit$Rating)
+```
+
+18. Briefly answer: Do you think that this data is somewhat normally distributed? Why or why not?
+The data seems to be somewhat normally distributed. The histogram shows that the data is skewed left. Furthermore, the qqplot reveals some form of curvature on the plot which indicates some form of non-normality. 
+
+
+19. Install (only if not installed already) and load the "ggplot2" package and draw a histogram with the ggplot() function
+
+```{r}
+# Load the ggplot2 package
+library("ggplot2")
+
+# Draw histogram
+ggplot(data = credit) +
+  geom_histogram(aes(x = Rating))
+```
+
+20. Then draw a dual line plot with Credit Rating on the Y axis and Income on the X axis, separated by gender (i.e., facet_wrap())
+
+```{r}
+ggplot(data = credit) +
+  geom_line(aes(x = Income, y = Rating)) +
+  facet_wrap(~Gender)
+```
