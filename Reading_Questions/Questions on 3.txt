@@ -1,0 +1,10 @@
+How small should the 2LLr be for us to conclude that the Reduced Model is preferred?
+
+If the OLS assumptions hold in full, the OLS and MLE (GLM) yields exactly the same result mathematically. What advantage then does OLS have over GLM that makes it BLUE?
+
+Log(salary) of 5.11 or a salary of $165.7k
+- How did they arrive at $165.7
+
+Log(salary) of 6.74 or a salary of $845.6K
+- How did they arrive at the figure here?
+

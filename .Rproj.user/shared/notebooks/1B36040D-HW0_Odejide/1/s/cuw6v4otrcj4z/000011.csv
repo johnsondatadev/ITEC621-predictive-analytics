@@ -1,2 +1,0 @@
-"0","credit <- read.csv(""../../../Dataset/Credit.csv"")"
-"0","head(credit)"

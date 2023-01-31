@@ -19,7 +19,7 @@ for(i in 1:10){
 }
   
 # Question 3
-credit <- read.table("Dataset/Credit.csv")
+credit <- read.csv("Dataset/Credit.csv")
 head(credit)
 head(credit, 5)[, 1:5]
 
@@ -27,7 +27,14 @@ head(credit, 5)[, 1:5]
 fit.rating <- lm(Rating ~ ., data = credit)
 summary(fit.rating)
 
+lm.rating <- lm(Rating ~ Income, data = credit)
+
+plot(credit$Rating ~ credit$Income, xlab = "Income", ylab = "Credit Rating")
+abline(lm.rating)
+
 fit.rating.sig_preds <- lm(Rating ~ Income + Limit + Cards + Married + Balance, data = credit)
+plot(fit.rating.sig_preds, which = 1)
+
 summary(fit.rating.sig_preds)
 
 glimpse(credit)

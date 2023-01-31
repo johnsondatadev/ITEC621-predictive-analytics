@@ -80,8 +80,13 @@ for(i in 1:10){
 - List the first 5 columns of the top 5 rows
 
 ```{r}
+# Read CSV from the root folder which has 3 subfolders to access the Dataset subfolder in which the Credit.csv file is located.
 credit <- read.csv("../../../Dataset/Credit.csv")
+
+# Get the top 6 rows of the table using the head function
 head(credit)
+
+# Get the top 5 columns of the top 5 rows. The first range in the square bracket is left blank becuase the 5 in the head function already generated the 5 rows needed. Hence, we only need the second range of values in the square bracket which represents the columns
 head(credit, 5)[, 1:5]
 ```
 
@@ -90,8 +95,9 @@ head(credit, 5)[, 1:5]
 - Display the model summary results (summary() function)
 
 ```{r}
+# linear model for credit rating as a function of all the other variables
 fit.rating <- lm(Rating ~ ., data = credit)
-summary(fit.rating)
+summary(fit.rating) # Summary generates the result of the linear model
 ```
 
 5. Write a simple linear model to predict credit ratings using the
@@ -99,6 +105,7 @@ most significant predictors: Income, Limit, Cards, MarriedYes, Balance; and
 - Display the regression summary results 
 
 ```{r}
+# linear model for the significant predictors - *Notice that although the result from the Summary indicates a MarriedYes, in representing the significant predictors, Married was used because that is how it was represented in the dataset. MarriedYes is only an indicator that Married is a categorical variable and has already been implicitly assigned dummy values.
 fit.rating.sig_preds <- lm(Rating ~ Income + Limit + Cards + Married + Balance,
                            data = credit)
 summary(fit.rating.sig_preds)
@@ -107,6 +114,10 @@ summary(fit.rating.sig_preds)
 6. Display the object class for Gender (i.e., Credit$Gender), Income and Cards
 
 ```{r}
+# The class function is used to display the type of class that the object represents.
+
+class(credit)
+
 class(credit$Gender)
 
 class(credit$Income)
@@ -163,6 +174,7 @@ Income.stats
 
 ```{r}
 names(Income.stats) <- c("Mean", "Min", "Max", "StDev", "Var")
+
 Income.stats
 ```
 
@@ -209,6 +221,7 @@ qqline(credit$Rating)
 
 18. Briefly answer: Do you think that this data is somewhat normally distributed? Why or why not?
 The data seems to be somewhat normally distributed. The histogram shows that the data is skewed left. Furthermore, the qqplot reveals some form of curvature on the plot which indicates some form of non-normality. 
+
 
 
 19. Install (only if not installed already) and load the "ggplot2" package and draw a histogram with the ggplot() function

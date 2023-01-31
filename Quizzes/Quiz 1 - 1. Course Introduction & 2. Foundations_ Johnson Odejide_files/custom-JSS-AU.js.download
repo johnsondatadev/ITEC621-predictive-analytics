@@ -1,0 +1,14 @@
+// JavaScript Document
+$(document).ready(function(){
+// Checks the page to make sure it is course settings
+if (/^\/courses\/[0-9]+\/settings$/.test(window.location.pathname)) {
+// Checks that current user role is not an admin to hide/disable options. Admins can access all settings.
+if($.inArray('admin',ENV.current_user_roles) == -1){
+// Hides course delete button
+$('a[href*=\'confirm_action?event=delete\']').hide();
+// Hides course reset button
+//$('a[href*=\'/reset\']').hide();
+}
+}
+
+});

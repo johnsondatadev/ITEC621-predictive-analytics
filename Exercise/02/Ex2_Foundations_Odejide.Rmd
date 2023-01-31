@@ -1,0 +1,126 @@
+---
+title: "ITEC 621 Exercise 2 - Foundations"
+author: "J. Alberto Espinosa"
+date: "January 15, 2023"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: 2
+subtitle: Descriptive and Predictive Analytics
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=T, warning=F, message=F)
+```
+
+## General Instructions
+
+In this exercise you will do quick descriptive and predictive analytics to evaluate if the Salaries data set (with professor salaries) supports the **gender pay gap hypothesis**. 
+
+First, download the R Markdown template for this exercise **Ex2_Foundations_YourLastName.Rmd** and save it with your own last name **exactly**. Then  open it in R Studio and complete all the exercises and answer the questions below in the template. 
+
+**Knitting and Formatting**: no or improper knitting and formatting is worth up to **3 points** in this exercise. Once all your R code is working properly, **knit** your R Markdown file into a Word document and upload it into Canvas. If for some reason you can't knit a Word file, you can knit an HTML or PDF file. But please ensure that all your text narratives are fully visible (if I can't see the text I can't grade it). Also, please ensure that your **Table of Contents** is properly formatted. 
+
+**Note about where to write interpretations:** Please write your interpretations in the text area of R Markdown and **DO NOT** use the # or ## tags. These cause your text to appear as headings or sub-headings and show up in the table of contents. I use the # tag, but inside the R code chunks. I write my solutions inside the R code chunk rather than in the text area, so that I can suppress the solution. But you don't need to do this, so write all your narratives in the text areas.
+
+## 1. Descriptive Analytics
+
+**1.1 Examine the data**
+
+**Is there a gender pay gap?** Let's analyze this important question using professor salaries.
+
+Load the library **{car}**, which contains the **Salaries** data set. Then, list the first few records with `head(Salaries)`. The display the `summmary()` for this dataset, which will show frequencies. 
+
+```{r data}
+library(car)
+head(Salaries)
+summary(Salaries)
+```
+
+Then, load the library **{psych}** which contains the `describe()` function and use this function to list the descriptive statistics for the data set. Then display the mean salary grouped by gender using the `aggregate()` function (feed grouping formula first, followed by the dataset **Salaries** and then the aggregate function to apply, i.e., mean.
+
+```{r Descriptives}
+library(psych)
+describe(Salaries)
+aggregate(salary ~ sex, Salaries, mean)
+```
+
+**1.2 Correlation, Boxplots and ANOVA**
+
+The means by gender above suggest that there may be a gender pay gap at this institution. Let's analyze this visually and statistically. Load the library **GGally** and run the **ggpairs()** function on the **salary**, **sex** and **yrs.since.phd** variables (only) in the **Salaries** data set to display some basic descriptive statistics and correlation, visually. Please note that the **Salary** data set is **capitalized**, whereas the variable **salary** is not. Please also label your variables appropriately (see graph below).
+
+Tips: `ggpairs()` requires a **data frame**. So you need to use the `data.frame()` function to bind the necessary column vectors into a data frame (e.g., `ggpairs(data.frame("Salary" = Salaries$salary, etc.)`. Notice the difference in the quality of the graphics and how categorical variables are labeled. Also, add the attribute `upper = list(combo='box')` in the `ggpairs()` function to get labels for the boxplot.
+
+```{r Visual}
+require(GGally)
+ggpairs(data.frame(
+  "Salary" = Salaries$salary,
+  "Gender" = Salaries$sex,
+  "Years Since PhD" = Salaries$yrs.since.phd,
+  upper = list(combo = 'box')
+))
+```
+
+Finally, conduct an ANOVA test to evaluate if there is a significant difference between mean salaries for male and female faculty. Feed `Salaries$salary ~ Salaries$sex` into the `aov()` function. Embed the `aov()` function inside the `summary()` function to see the statistical test results. 
+
+```{r Anova}
+summary(aov(Salaries$salary ~ Salaries$sex))
+```
+
+**1.3 Preliminary Interpretation**
+
+Based on the output above, does it appear to be a gender pay gap? Why or why not. In your answer, please refer to as much of the data above to support your answer.
+
+>There appears to be a gender pay gap. The males appear to receive more salary than the female. Although the box plot of Salary by Gender does not indicate a difference in mean as there seems to be an equal spread with an overlap. However, based on the ANOVA test, the data provide significant evidence that there is a difference between the mean salaries of females and males (p-value = 0.00567). Furthermore, we observed that there is a high correlation between Years.since.PhD and Salary which might suggest why males received more salary than females since the males have more years since obtaining their Ph.D. than females.
+
+## 2. Basic Predictive Modeling
+
+**2.1 Salary Gender Gap: Simple OLS Regression**
+
+Suppose that you hypothesized that there is a salary gender pay gap. 
+
+** Technical Note:** it is more effective to set the null hypothesis to the contrary of what you want to prove, so that you can reject it if not supported. 
+
+Fit a linear model function `lm()` to test this hypothesis by predicting salary using only **sex** as a predictor. Store the results in an object called `lm.fit.1`, then inspect the results using the `summary()` function. 
+
+```{r lmfit1}
+lm.fit.1 <- lm(Salaries$salary ~ Salaries$sex)
+summary(lm.fit.1)
+```
+
+Do these results support the salary gender gap hypothesis? Briefly explain why.
+
+>Yes, looking at the coefficient of the sexMale which is both positive and significant, the data provides an evidence that males received an average of $14,088 more than females (p-value = 0.00567). 
+
+
+**2.2 Multivariate OLS Regression**
+
+Now fit a 2-predictor linear model (quantitative + dummy variable) with **yrs.since.phd** and **sex** as predictors, and save it in an object named `lm.fit.2`. Then inspect the results  using the `summary()` function. 
+
+```{r lmfit2}
+lm.fit.2 <- lm(Salaries$salary ~ Salaries$yrs.since.phd + Salaries$sex)
+summary(lm.fit.2)
+```
+
+Do these results support the salary gender gap hypothesis? Briefly explain why.
+
+>Holding years since phd constant,there is no strong evidence that supports this argument. on average, males receive about $7,923 more than females but that is only significant at the level when p = 0.0915 but not valid when p < 0.05.
+
+**2.3 Comparing Models with ANOVA F-Test**
+
+Run an ANOVA test using the `anova()` function to compare **lm.fit.1** to **lm.fit.2**.
+
+```{r anova}
+anova(lm.fit.1, lm.fit.2)
+```
+
+**2.4 Interpretation**
+
+Provide your brief conclusions (in **6 lines** or so) about whether you think there is a gender pay gap based on this analysis (you will expand this analysis much further in HW2). First, based on the Anova test above, which `lm()` model is better and why? Then, compare the best predictive model of the two against the descriptive analytics results you obtained in 1.2 above. If the null hypothesis is that there is no gender pay gap, is this hypothesis supported? Why or why not?
+
+>From the ANOVA F-test of comparing the two models, the model with that includes the years since phd is better than the model without it. This indicates that the model without the years since phd is a more biased model.
+there seem to be a gender pay gap. However, this gap is not dependent on the gender but rather more on the years since PhD

@@ -1,6 +1,0 @@
-"0","# Load the ggplot2 package"
-"0","library(""ggplot2"")"
-"0",""
-"0","# Draw histogram"
-"0","ggplot(data = credit) +"
-"0","  geom_histogram(aes(x = Rating))"

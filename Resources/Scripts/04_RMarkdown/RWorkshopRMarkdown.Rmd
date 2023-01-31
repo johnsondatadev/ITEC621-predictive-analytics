@@ -1,0 +1,210 @@
+---
+title: "KSB-999 R Markdown for R Workshop"
+subtitle: "Kogod School of Business"
+author: "Prof. J. Alberto Espinosa"
+date: "11/10/2020"
+output:
+  word_document:
+    toc: true
+    toc_depth: 2
+---
+
+## R Markdown Introduction
+
+**R Markdown** is an R Studio package that allows you to output the results of your script to a Word, PDF, HTML, Shiny or PowerPoint documents. There are many other formats available for the output. You can control the output to include or suppress text, formatting, R code, R output results, etc. 
+
+For more details on using R Markdown see:
+http://rmarkdown.rstudio.com.
+
+For more information see: 
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
+
+Here is an excellent R Markdown documentation:
+https://bookdown.org/yihui/rmarkdown/
+
+Also, for a quick **cheatsheet** for R Markdown see:
+https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf
+
+We will only scratch the surface in this workshop, but R Markdown is very versatile and powerful. If you wish to learn more about R Markdown, this is an excellent free book written by three R Studio experts:
+
+https://bookdown.org/yihui/rmarkdown/markdown-syntax.html#block-level-elements
+
+There are 3 important sections in an R Markdown: the YAML (the header of the file); markdown sections (where you type and format you text, narratives, etc.); and code chunks (where you write your R script commands).
+
+The process of reading your R Markdown file and converting it to Word, PDF, etc. is called **knitting**. R Markdown calls a program called **knitr** (i.e., knit R) to do the knitting.
+
+If you have not installed R Markdown yet, **STOP** here and do so now. If you see the **Knit** icon in the toolbar above, you are all set and ready to go. If not, you need to install RMarkdown with `install.packages("rmarkdown")` before you can knit documents. 
+
+Once you have R Markdown installed and you can see the **Knit** button, and once you are done writing your R Markdown file, click on the knit button above. As a test, you can knit this R Markdown file and knitr should generate a Word file. knitr will read your markdown text and write it to the Word file with the specified formatting until it encounters a **code chunk**. It will then stop knitting for a moment, run your R code and then knit the results (and also the code if you wish). It will continue to the end of the R Markdown file.
+
+**Note:** In order to knit PDF documents you first need to install MikTex, which is a distribution of TeX or LaTex, which is a document production program designed to produce nicely formatted PDF documents. knitr needs this program to knit PDF file. To learn more about MikTex and how to install it go to: http://miktex.org/
+
+## YAML
+
+The YAML file header section is at the top of the script enclosed between the two "---" lines. YAML is a recursive acronym (the acronym is in the text also) that stands for **YAML Ain't Markup Language** (an acronym inside an acronym). When you create an R Markdown file from the menu (File -> New File -> R Markdown) and select your file options, R Markdown will create a blank R Markdown template for you with the YAML included at the top. But you can edit it on your own. The YAML will generate the header of your knitted document.
+
+In the YAML section at the top of this file, I instruct the markdown file to be knitted into a Word file. The `word_document` in the output area will cause the document to be knitted as a MS Word file. But you can use `html_document`, `pdf_document` or `powerpoint_presentation` instead.
+
+The YAML tags are self explanatory, but the **Output:** in the YAML in the header of this file has indented lines below it, indicating that the file to knit is a Word file and the **toc** instruct knitr to create a **table of contents** two levels down (in this case). Any text that begins with a # is a level 1 header and ## is a level 2 header. So everything that has # or ## at the begining of the line will appear in the table of contents. Naturally, you can change the **toc_depth**.
+
+## Global Options
+
+The global options allows you to set defaults for the entire knitted document. This is a good place to define the general defaults. However, you can change the options in any code chunk. The spedific code chunk options will take precedence over the global options. A good practice is to set the general options for your document in the global options and change them when needed in the code chunks.
+
+These are the global options for this file:
+
+This line starts an R code chunk: \```{r global_options, include=FALSE}
+
+This line sets the options: \\knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)<BR>
+
+This line ends the R code chunk: \```
+
+```{r global_options, include=F}
+knitr::opts_chunk$set(echo=T, warning=F, message=F)
+```
+
+In this case above, we are setting the `echo=TRUE`, abbreviated as `T`, which will cause all the R code to be displayed in the knitted HTML file. If you are working on a client report, for example, you can omit the R code with echo=FALSE, abbreviated as `F` and you will only see the R output.
+
+**Options:**
+
+You can use these options in the global options, or in specific code chunks.
+
+`echo=F` suppresses the R code in the knitted document. `T` shows it.
+`warning=F` suppresses warnings generated by the code. `T` shows it.
+`message=F` suppresses messages generated by the code. `T` shows it.
+`include=F` suppresses both code and results. `T` shows them.
+`eval=T` (default) runs the code, `eval=F` does not
+`fig.cap = "..."` adds a caption to graphical results
+`fig.width=8` causes figures to be displayed with a width of 8 inches
+`fig.height=6` causes figures to be displayed with a height of 6 inches
+
+## Markdown Areas
+
+The markdown areas is where you type and format all your text, similarly to how you code text and tags in HTML. Here are a few tags you can use in the Markdown areas:
+
+\# Use single pound sign for a level-1 header
+
+\## Use two pound signs for a level-2 header, etc.
+
+\### for level-3 and so on
+
+\* Enclose text in between 2 asterix for italics
+
+\** Enclose text in between 2 double asterix for bold facing
+
+\*** Type 3 asterixs fo get a horizontal rule
+
+\\ Use a backslash if you want to type an R command just for text display
+
+\* or \- Use either of these to display as a bullet
+
+\1. \2. etc. use numbers with a period for numbered items
+
+More formatting examples in the cheatsheet above or at: https://rmarkdown.rstudio.com/authoring_basics.html
+
+## Code Chunks
+
+An R code chunk starts with \```{r} and ends with \``` (these **back quotes** (they are not regular quotes) are called **back-ticks**, which can be found under the tilde (shift) ~ key in the upper left of your keyboard). You can name your code chunks \```{r MyCode}, but you have to be careful not to use duplicate names. I find it easier not to use names in the code chunks.
+
+You can run R commands in any line by pressing Crtl-Enter, just like with R Scripts.Or you can press the play button at the top right of the code chunk to run all the script commands in the code chunk. I recommend the play button so that you can test the code chunk as a whole.
+
+The R code will be shown in the marked down document if you set the option to \```{r, echo=T}. To suppress the code in the output set the option to \```{r, echo=F}
+
+## Code Chunk Examples
+
+Below is an example. Note that we have set `echo=T`. This will cause the R Code to display. While r global command at the top of the file applies to every code chunk, you can still turn the echo on or off for each individual code chunk. In this example we input data for a car loan evaluation and the program checks if the client qualifes for the loan or not.
+
+Also, note that I named the code chunk below **CarLoanScript**. This script will **display the R code and results**.
+
+`{r CarLoanScript, echo=T}`
+
+```{r CarLoanScript, echo=T}
+
+CarPrice <- 30000
+DownPayment <- 2000
+LoanYears <- 5
+AnnualInterest <- 0.04 # i.e., 4%
+AnnualIncome <- 60000
+MonthlyObligations <- 2300
+
+LoanAmount <- CarPrice - DownPayment
+LoanMonths <- LoanYears * 12
+MonthlyInterest <- AnnualInterest / 12
+MonthlyPmt <- LoanAmount * MonthlyInterest / (1 - (1 / (1 + MonthlyInterest) ^ LoanMonths))
+MonthlyIncome <- AnnualIncome / 12
+DisposableIncome <- MonthlyIncome - MonthlyObligations
+PmtToDisposableRatio <- MonthlyPmt / DisposableIncome
+
+print(sprintf("Car Price: %s", CarPrice))
+print(sprintf("Down Payment: %s", DownPayment))
+print(sprintf("Loan Years: %s", LoanYears))
+print(sprintf("Annual Interest: %s", AnnualInterest))
+print(sprintf("Monthly Disposable Income: %s", DisposableIncome))
+print(sprintf("Your monthly payment is %s", MonthlyPmt))
+print(sprintf("Your disposable income is %s", DisposableIncome))
+print(sprintf("Your monthly payment to disposable income ratio is %s", PmtToDisposableRatio))
+
+if (PmtToDisposableRatio > 0.2) # i.e., loan payment is more than 20% if income
+  {print("Your loan application has been declined")} else
+  {print("Your loan application has been approved")}
+
+```
+
+This script will **NOT display** the **R code**, just the **results**
+
+`{r CarLoanNoScript, echo=F}`
+
+```{r CarLoanNoScript, echo=F}
+
+CarPrice <- 30000
+CarPrice
+DownPayment <- 2000
+DownPayment
+LoanYears <- 5
+LoanYears
+AnnualInterest <- 0.04 # i.e., 4%
+AnnualInterest
+AnnualIncome <- 60000
+AnnualIncome
+MonthlyObligations <- 2300
+MonthlyObligations
+```
+
+This script will **display** the **R code**, but **NOT** the **results**
+
+`{r CarLoanJustCode, echo=T, results="hide"}`
+
+```{r CarLoanJustCode, echo=T, results="hide"}
+CarPrice <- 30000
+CarPrice
+DownPayment <- 2000
+DownPayment
+LoanYears <- 5
+LoanYears
+AnnualInterest <- 0.04 # i.e., 4%
+AnnualInterest
+AnnualIncome <- 60000
+AnnualIncome
+MonthlyObligations <- 2300
+MonthlyObligations
+```
+
+This script will **NOT** display the **R code** or the **output**
+
+`{r CarLoanNoOutput, include=F}`
+
+```{r CarLoanNoOutput, include=F}
+
+CarPrice <- 30000
+CarPrice
+DownPayment <- 2000
+DownPayment
+LoanYears <- 5
+LoanYears
+AnnualInterest <- 0.04 # i.e., 4%
+AnnualInterest
+AnnualIncome <- 60000
+AnnualIncome
+MonthlyObligations <- 2300
+MonthlyObligations
+```
