@@ -8,3 +8,5 @@ Log(salary) of 5.11 or a salary of $165.7k
 Log(salary) of 6.74 or a salary of $845.6K
 - How did they arrive at the figure here?
 
+
+When is it more appropriate for me to do read.table as opposed to read.csv
