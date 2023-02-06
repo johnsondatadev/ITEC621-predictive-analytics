@@ -195,7 +195,7 @@ coefplot(lm.fit)
 options(scipen = "4") # Limit the use of scientific notation
 
 library(MASS) # Needed for the Boston data set
-
+?Boston
 # Multiple regression model with 3 predictors on the median value of houses in the Boston area. The model syntax is the same as for simple linear models, but now we have more than one predictor, separated with the "+" operator
 
 lm.fit <- lm(medv ~ lstat + crim + age + chas, 

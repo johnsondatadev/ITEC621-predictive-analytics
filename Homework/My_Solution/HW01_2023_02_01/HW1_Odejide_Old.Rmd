@@ -1,8 +1,8 @@
 ---
 title: "ITEC 621 - Homework 1"
 subtitle: "R, Stats and Regression Refresher"
-author: "Prof. J. Alberto Espinosa"
-date: "January 29, 2023"
+author: "Johnson ODEJIDE"
+date: "February 03, 2023"
 output:
   word_document:
    toc: true
@@ -66,7 +66,7 @@ Note: The **PizzaCal** data set contains the grams of moisture, protein, etc. pe
 2.1 Read the **PizzaCal.csv** data table into a data frame named **Pizza** (tip: use the `read.table()` function with `header = T`, `row.names = 1` and `sep = ","`. Display the **first 6 rows** (use the `head()` function) of this data set. 
 
 ```{r ReadCSV}
-
+Pizza <- read.table("../../../Dataset/PizzaCal.csv", header = T, row.names = 1, sep = ",")
 ```
 
 2.2 Then, display the object class for the **Pizza** data frame and for the vectors **cal** (i.e., `Pizza$cal`), **fat** and **brand**.

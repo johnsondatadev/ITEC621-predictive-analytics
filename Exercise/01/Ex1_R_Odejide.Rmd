@@ -1,19 +1,18 @@
 ---
 title: "ITEC 621 Exercise 1 - R Refresher"
-author: "J. Alberto Espinosa"
-date: "January 15, 2023"
+author: "Johnson ODEJIDE"
+date: "February 03, 2023"
 output:
+  word_document:
+    toc: yes
+    toc_depth: 2
+  pdf_document:
+    toc: yes
+    toc_depth: 2
   html_document:
     toc: yes
     toc_depth: '2'
     df_print: paged
-  pdf_document:
-    toc: yes
-    toc_depth: 2
-  word_document:
-    toc: yes
-    toc_depth: 2
-subtitle: Modified by Johnson Odejide on January 15 2023
 ---
 
 ```{r global_options, include=FALSE}
@@ -59,15 +58,12 @@ Your knitted file must:
 
 ```{r}
 # Area of a rectangle
-Area <- function(length, breadth){
+area <- function(length, breadth){
   return(length * breadth)
 }
 
 # Using the function to calculate a rectangle with length of 6 and breadth of 4
-length <- 6
-breadth <- 4
-print(paste("The area of a rectangle of sides ", length, 
-            "x", breadth, " is ", Area(length, breadth)))
+print(paste("The area of a rectangle of sides 6x4 is ", area(6, 4)))
 ```
 
 1.2 Write a simple **for loop** for i from 1 to 10. In each loop cycle, compute the area of a rectangle of sides i and i*2 (i.e., all rectangles have one side double the length than the other) and for each of the 10 rectangles display "The area of an 1 x 2 rectangle is 2" for i=1, "The area of an 2 x 4 rectangle is 8", and so on.
@@ -75,7 +71,7 @@ print(paste("The area of a rectangle of sides ", length,
 ```{r}
 for(i in 1:10){
   print(paste("The area of a rectangle of a ", i, 
-              "x", (i*2), " rectangle is ", Area(i, i*2)))
+              "x", (i*2), " rectangle is ", area(i, i*2)))
 }
 ```
 
@@ -115,10 +111,10 @@ class(Credit$Cards)
 
 ```{r}
 # A vector with data from the Income column
-Income.vect <- Credit$Income
+income.vect <- Credit$Income
 
 # Display the first 6 values
-head(Income.vect)
+head(income.vect)
 ```
 
 
@@ -126,30 +122,30 @@ head(Income.vect)
 
 3.1 Compute the mean, minimum, maximum, standard deviation and variance for all the values in this income vector. Store the respective results in variables name mean.inc, min.inc, etc. Then, use the `c()` function to create a vector called **income.stats** with 5 values you computed above. Then use the `names()` function to give the corresponding names "Mean", "Min", "Max", "StDev", and "Var". Then display Income.stats vector, but wrap it within the `round()` function with a parameter `digits = 2` to display only 2 decimals.
 
-**Technical Note:** The `names()` needs to create a vector with the respective names above, which need to correspond to the values in **incom.vect**. Therefore, you need to use the `c()` function to create a vector with these 5 names.
+**Technical Note:** The `names()` needs to create a vector with the respective names above, which need to correspond to the values in **income.vect**. Therefore, you need to use the `c()` function to create a vector with these 5 names.
 
 ```{r}
 # Mean Income
-mean.inc <- mean(Income.vect)
+mean.inc <- mean(income.vect)
 
 # Minimum Income
-min.inc <- min(Income.vect)
+min.inc <- min(income.vect)
 
 # Maximum Income
-max.inc <- max(Income.vect)
+max.inc <- max(income.vect)
 
 # Standard Devition of Income
-stdev.inc <- sd(Income.vect)
+stdev.inc <- sd(income.vect)
 
 # Variance of Income
-var.inc <- var(Income.vect)
+var.inc <- var(income.vect)
 
 # Vector of all the statistics
-Income.stats <- c(mean.inc, min.inc, max.inc, stdev.inc, var.inc)
+income.stats <- c(mean.inc, min.inc, max.inc, stdev.inc, var.inc)
 
-names(Income.stats) <- c("Mean", "Min", "Max", "StDev", "Var")
+names(income.stats) <- c("Mean", "Min", "Max", "StDev", "Var")
 
-round(Income.stats, digits = 2)
+round(income.stats, digits = 2)
 ```
 
 3.2 Display a boxplot for the predictor Income. Tip: you can do this 2 ways. First you can `attach()` the Credit data set (which loads the data set in the work environment) and then do a `boxplot()` for **Income**. Or, do it without attaching, but using the table prefix (i.e., `Credit$Income`). Use the **xlab** attribute to name include the label "Income". Then display similar boxplots but this time broken down by **Gender** (i.e., `Credit$Income ~ Credit$Gender` ).
@@ -171,7 +167,7 @@ qqline(Credit$Rating)
 
 3.4 Briefly answer **in your own words**: Do you think that this data is somewhat normally distributed? Why or why not? In your answer, please refer to both, the Histogram and the QQ Plot.
 
-A look at the histogram shows that the data is skewed right. Furthermore, the qqplot reveals some form of normality at the middle until some point when it obviously began to deviate from the line, showing some form of curvature on the plot which indicates some form of non-normality. 
+A look at the histogram shows that the data is skewed right although it looks normal to some extent before it started to become skewed. Furthermore, the qqplot reveals some form of normality in the middle until some point when it began to deviate from the line thereby showing some form of non-normality. This is consistent with what was observed on the histogram.
 
 
 ## 4. Basic Predictive Analytics

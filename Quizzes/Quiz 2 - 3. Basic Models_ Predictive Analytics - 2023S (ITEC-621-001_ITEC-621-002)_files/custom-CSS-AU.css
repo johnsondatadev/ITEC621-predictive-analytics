@@ -1,0 +1,25 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+/* HIDE EDIT EMAIL */
+
+.add_email_link {
+
+    display: none;
+
+}
+
+/* HIDE ADD CONTACT */
+
+.add_contact_link {
+
+    display: none;
+
+}
+
+/* HIDE EXPORT COPYRIGHT DISCLAIMER */
+
+div#course-webzip-export-app p {
+    display: none;
+}
