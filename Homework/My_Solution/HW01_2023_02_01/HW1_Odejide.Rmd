@@ -254,7 +254,7 @@ In the full model, although **import** has a positive effect on **cal**, this ef
 
 **Answer:**
 
-In the `"dummy"` model (8.1), it matters to the model that there is an import or not. However, on the full model, it shows that fitting the model with additional (significant) predictors makes **import** insignificant. In other words, in the full model, it doesn't matter if there was an import or not.
+In the `"dummy"` model (8.1), it matters to the model that there is an import or not and this is a somewhat biased model as it doesn't consider other variables. However, on the full model, it shows that fitting the model with additional (significant) predictors makes **import** insignificant. In other words, holding everything else constant, it doesn't matter if the brand was imported or not, it doesn't have an effect on the calories of the Pizza.
 
 
 ## Q10. Residual Plots and Model Evaluation (10 pts.)
@@ -275,4 +275,4 @@ anova(fit.simple, fit.dummy, fit.full)
 
 **Answer:**
 
-The full model is preferred. From the ANOVA test, it was observed that there is a significant difference between the full model and the dummy model. Further more, the residual sum of squared of the dummy model is very high (181469 on 297 degress of freedom) compared to the full model where it is much more reduced (1406 on 295 degrees of freedom) indicating a lesser variation in the latter. This is so because looking at the full model, approximately 100% of the variability of the response variable _cal_ is explained by the model while in the dummy model, about 84.2% of the variability can be explained by the model.
+The full model is preferred. From the ANOVA test, it was observed that there is a significant difference between the full model and the dummy model. Further more, the residual sum of squared of the dummy model is very high (181469 on 297 degrees of freedom) compared to the full model where it is much more reduced (1406 on 295 degrees of freedom) indicating a lesser variation in the latter. This is so because looking at the full model, approximately 100% of the variability of the response variable _cal_ is explained by the model while in the dummy model, about 84.2% of the variability can be explained by the model.

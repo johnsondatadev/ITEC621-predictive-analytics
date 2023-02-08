@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="J. Alberto Espinosa" />
+<meta name="author" content="Johnson ODEJIDE" />
 
-<meta name="date" content="2023-01-15" />
+<meta name="date" content="2023-02-03" />
 
 <title>ITEC 621 Exercise 2 - Foundations</title>
 
@@ -1622,9 +1622,8 @@ display: none;
 
 
 <h1 class="title toc-ignore">ITEC 621 Exercise 2 - Foundations</h1>
-<h3 class="subtitle">Descriptive and Predictive Analytics</h3>
-<h4 class="author">J. Alberto Espinosa</h4>
-<h4 class="date">January 15, 2023</h4>
+<h4 class="author">Johnson ODEJIDE</h4>
+<h4 class="date">February 03, 2023</h4>
 
 </div>
 
@@ -1758,18 +1757,16 @@ function. Embed the <code>aov()</code> function inside the
 <p>Based on the output above, does it appear to be a gender pay gap? Why
 or why not. In your answer, please refer to as much of the data above to
 support your answer.</p>
-<blockquote>
-<p>There appears to be a gender pay gap. The males appear to receive
-more salary than the female. Although the box plot of Salary by Gender
-does not indicate a difference in mean as there seems to be an equal
-spread with no obvious overlapping. However, based on the anova test,
-the data provides a significant evidence that there is a difference
-between the mean salaries of female and male (p-value = 0.00567).
-Furthermore, we observed that there is a high correlation between
-Years.since.PhD and Salary which might suggest why males received more
-salary than females since the males have more years since obtaining
-their PhD than females.</p>
-</blockquote>
+<p><em>There appears to be a gender pay gap. On average, the males
+appear to receive more salary than the female. Although the box plot of
+Salary by Gender does not indicate a difference in the mean salary as
+there seems to be a fairly equal spread with an overlap. However, based
+on the ANOVA test, the data provide significant evidence that there is a
+difference between the mean salaries of females and males (p-value =
+0.00567). Furthermore, we observed that there is a high correlation
+between Years.since.PhD and Salary which might suggest why males
+received more salary than females since the males have more years since
+obtaining their Ph.D. than females.</em></p>
 </div>
 <div id="basic-predictive-modeling" class="section level2">
 <h2>2. Basic Predictive Modeling</h2>
@@ -1805,6 +1802,10 @@ summary(lm.fit.1)</code></pre>
 ## F-statistic: 7.738 on 1 and 395 DF,  p-value: 0.005667</code></pre>
 <p>Do these results support the salary gender gap hypothesis? Briefly
 explain why.</p>
+<p><em>Yes, looking at the coefficient of the sexMale which is both
+positive and significant, the data provides an evidence that males
+received an average of $14,088 more than females (p-value =
+0.00567).</em></p>
 <p><strong>2.2 Multivariate OLS Regression</strong></p>
 <p>Now fit a 2-predictor linear model (quantitative + dummy variable)
 with <strong>yrs.since.phd</strong> and <strong>sex</strong> as
@@ -1833,6 +1834,11 @@ summary(lm.fit.2)</code></pre>
 ## F-statistic: 43.74 on 2 and 394 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Do these results support the salary gender gap hypothesis? Briefly
 explain why.</p>
+<p><em>Holding years since phd constant, there is no strong evidence
+that suggests a salary gender gap between the males and females. On
+average, males receive about $7,923 more than females but that is only
+significant at the level when p = 0.0915 but not valid when p &lt;
+0.05.</em></p>
 <p><strong>2.3 Comparing Models with ANOVA F-Test</strong></p>
 <p>Run an ANOVA test using the <code>anova()</code> function to compare
 <strong>lm.fit.1</strong> to <strong>lm.fit.2</strong>.</p>
@@ -1851,6 +1857,19 @@ compare the best predictive model of the two against the descriptive
 analytics results you obtained in 1.2 above. If the null hypothesis is
 that there is no gender pay gap, is this hypothesis supported? Why or
 why not?</p>
+<p><em>Initially, a look at the model that fits the data using only the
+sex variable (lm.fit.1) seems misleading as it proved to be
+statistically signficant (p-value &lt; 0.05), suggesting that there is a
+gender pay gap between males and females that is attributed to gender.
+Only by including the second model (lm.fit.2) did we notice there are
+other factors like the years since PhD that has even more effect on the
+pay difference than gender.</em> <em>Although there seems to be a gender
+pay gap, this gap is not evidently dependent on the gender as much as on
+the years since PhD.</em> <em>From the ANOVA F-test of comparing the two
+models, the model that includes the years since phd is better than the
+model without it. This indicates that the model without the years since
+phd (lm.fit.1) is a more biased model because the effect of gender on
+pay gap is not strong enough for conclusion.</em></p>
 </div>
 
 
