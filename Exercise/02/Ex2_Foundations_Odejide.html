@@ -1857,19 +1857,25 @@ compare the best predictive model of the two against the descriptive
 analytics results you obtained in 1.2 above. If the null hypothesis is
 that there is no gender pay gap, is this hypothesis supported? Why or
 why not?</p>
+<p><em>The second model which is also the larger model, that is,</em>
+<code>lm.fit.2</code> <em>which includes the variable</em>
+<code>yrs.since.phd</code> <em>is better because when it is compared
+with the first model (the smaller model)</em> <code>lm.fit.1</code>
+<em>using the ANOVA test, the result of the test was
+significant.</em></p>
 <p><em>Initially, a look at the model that fits the data using only the
 sex variable (lm.fit.1) seems misleading as it proved to be
 statistically signficant (p-value &lt; 0.05), suggesting that there is a
-gender pay gap between males and females that is attributed to gender.
-Only by including the second model (lm.fit.2) did we notice there are
-other factors like the years since PhD that has even more effect on the
-pay difference than gender.</em> <em>Although there seems to be a gender
-pay gap, this gap is not evidently dependent on the gender as much as on
-the years since PhD.</em> <em>From the ANOVA F-test of comparing the two
-models, the model that includes the years since phd is better than the
-model without it. This indicates that the model without the years since
-phd (lm.fit.1) is a more biased model because the effect of gender on
-pay gap is not strong enough for conclusion.</em></p>
+gender pay gap between males and females that is strongly attributed to
+gender. Only by fitting the second model (lm.fit.2) did we notice there
+are other factors like the years since PhD that has even more effect on
+the pay difference than gender.</em> <em>Although there seems to be a
+gender pay gap, this gap is not evidently dependent on the gender as
+much as on the years since PhD.</em> <em>From the ANOVA F-test of
+comparing the two models, the model that includes the years since phd is
+better than the model without it. This indicates that the model without
+the years since phd (lm.fit.1) is a more biased model because the effect
+of gender on pay gap is not strong enough for conclusion.</em></p>
 </div>
 
 

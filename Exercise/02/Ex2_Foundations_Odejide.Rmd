@@ -3,13 +3,13 @@ title: "ITEC 621 Exercise 2 - Foundations"
 author: "Johnson ODEJIDE"
 date: "February 03, 2023"
 output:
+  word_document:
+    toc: yes
+    toc_depth: 2
   html_document:
     toc: yes
     toc_depth: '2'
     df_print: paged
-  word_document:
-    toc: yes
-    toc_depth: 2
 ---
 
 ```{r global_options, include=FALSE}
@@ -121,7 +121,16 @@ anova(lm.fit.1, lm.fit.2)
 
 Provide your brief conclusions (in **6 lines** or so) about whether you think there is a gender pay gap based on this analysis (you will expand this analysis much further in HW2). First, based on the Anova test above, which `lm()` model is better and why? Then, compare the best predictive model of the two against the descriptive analytics results you obtained in 1.2 above. If the null hypothesis is that there is no gender pay gap, is this hypothesis supported? Why or why not?
 
-_Initially, a look at the model that fits the data using only the sex variable (lm.fit.1) seems misleading as it proved to be statistically signficant (p-value < 0.05), suggesting that there is a gender pay gap between males and females that is attributed to gender. Only by including the second model (lm.fit.2) did we notice there are other factors like the years since PhD that has even more effect on the pay difference than gender._
+_The second model which is also the larger model, that is,_ **lm.fit.2** _which includes the variable_ `yrs.since.phd` _is better because when it is compared with the first model (the smaller model)_ **lm.fit.1** _using the ANOVA test, the result of the test was significant._
+
+_Initially, a look at the model that fits the data using only the_ `sex` _variable_ (**lm.fit.1**) _seems misleading as it proved to be statistically significant (p-value < 0.05), suggesting that there is a gender pay gap between males and females that is strongly attributed to gender but this is only a preliminary test. Only by fitting the second (larger) model (lm.fit.2) did we notice there are other factors like the years since PhD that has even more effect on the pay difference than gender._
+
+_The second (larger) model, that is,_ **lm.fit.2** _showed that the variable_ `years.since.phd` **(years of experience after PhD)** _is a stronger predictor and that as it was with the smaller model_ (**lm.fit.1**), _on average, males received more pay than the females as the coefficient was positive. However, this difference is only attributed to sex at a level when p = 0.0915. This is also shown in the ggpairs_
+
+_At a significance level of p < 0.05, the smaller model_ **lm.fit.1** _supports the hypothesis that there is pay gap that is due to gender difference. This hypothesis is however not significantly supported by the second model_ **lm.fit.2** _because, although the effect of gender on the model is positive, it is only significant at p = 0.0915_
+
+_We reject the null hypothesis, as there was a strong evidence that on average, there is gender pay gap between the males and females but this gap is only significant at p = 0.0915 following the result from the lm.fit.2 model_
+
 _Although there seems to be a gender pay gap, this gap is not evidently dependent on the gender as much as on the years since PhD._
 _From the ANOVA F-test of comparing the two models, the model that includes the years since phd is better than the model without it. This indicates that the model without the years since phd (lm.fit.1) is a more biased model because the effect of gender on pay gap is not strong enough for conclusion._
 

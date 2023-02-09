@@ -3,13 +3,13 @@ title: "ITEC 621 - Homework 1"
 author: "Johnson ODEJIDE"
 date: "February 05, 2023"
 output:
-  word_document:
-    toc: yes
-    toc_depth: 2
   html_document:
     toc: yes
     toc_depth: '2'
     df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: 2
 subtitle: R, Stats and Regression Refresher
 ---
 
@@ -74,14 +74,14 @@ print(paste("The hypotenuse of a triangle with sides", a, "and", b, "is", hyp(a,
 
 Note: The **PizzaCal** data set contains the grams of moisture, protein, etc. per slice of pizza. The pizzas are categorized by brand and whether the brand is imported (1) or domestic (0).
 
-2.1 Read the **PizzaCal.csv** data table into a data frame named **Pizza** (tip: use the `read.table()` function with `header = T`, `row.names = 1` and `sep = ","`. Display the **first 6 rows** (use the `head()` function) of this data set. 
+**2.1** Read the **PizzaCal.csv** data table into a data frame named **Pizza** (tip: use the `read.table()` function with `header = T`, `row.names = 1` and `sep = ","`. Display the **first 6 rows** (use the `head()` function) of this data set. 
 
 ```{r ReadCSV}
 Pizza <- read.table("../../../Dataset/PizzaCal.csv", header = T, row.names = 1, sep = ",")
 head(Pizza)
 ```
 
-2.2 Then, display the object class for the **Pizza** data frame and for the vectors **cal** (i.e., `Pizza$cal`), **fat** and **brand**.
+**2.2** Then, display the object class for the **Pizza** data frame and for the vectors **cal** (i.e., `Pizza$cal`), **fat** and **brand**.
 
 ```{r Class}
 class(Pizza)
@@ -93,7 +93,7 @@ class(Pizza$fat)
 class(Pizza$brand)
 ```
 
-2.3 Then create a matrix called **Pizza.mat** that contains only the quantitative variables in the data set (i.e., mois through cal - tip: the index `[, 3:9]` will select all rows and columns 3 to 9 in the matrix). Display the class of the **Pizza.mat** object and then list the first 6 rows of this matrix, just to ensure you did the right thing.
+**2.3** Then create a matrix called **Pizza.mat** that contains only the quantitative variables in the data set (i.e., mois through cal - tip: the index `[, 3:9]` will select all rows and columns 3 to 9 in the matrix). Display the class of the **Pizza.mat** object and then list the first 6 rows of this matrix, just to ensure you did the right thing.
 
 ```{r matrix}
 
@@ -117,7 +117,7 @@ describe(Pizza)[3:9, 1:9]
 
 ## Q4. Correlation Analysis (10 pts.)
 
-4.1 Then create a correlation object named **Pizza.cor** using the `cor()` function. Then load the **{corrplot}** library and feed this **Pizza.cor** object into the `corrplot()` function. Add the parameter `"order = hclust"` to group the cluster the variables by correlation strength, and the parameters `method = number` to display correlation values. Then run the same `corrplot()` function, but this time use `method = ellipse` to get a graphical display.
+**4.1** Then create a correlation object named **Pizza.cor** using the `cor()` function. Then load the **{corrplot}** library and feed this **Pizza.cor** object into the `corrplot()` function. Add the parameter `"order = hclust"` to group the cluster the variables by correlation strength, and the parameters `method = number` to display correlation values. Then run the same `corrplot()` function, but this time use `method = ellipse` to get a graphical display.
 
 ```{r Correlation}
 Pizza.cor <- cor(Pizza.mat)
@@ -127,15 +127,16 @@ corrplot(Pizza.cor, method = "number", order = "hclust")
 corrplot(Pizza.cor, method = "ellipse", order = "hclust")
 ```
 
-4.2 Based on the correlation results above, suggest two desirable predictors to include in a regression model with **cal** as the outcome variable. Provide a brief rationale for your selection.
+**4.2** Based on the correlation results above, suggest two desirable predictors to include in a regression model with **cal** as the outcome variable. Provide a brief rationale for your selection.
 
 **Answer:**
-Two desirable predictors for **cal** would be ***mois*** and ***fat***.
-As observed from the correlation plot, `mois` has a correlation of ***-0.76*** indicating a moderately strong _negative relationship_ with `cal` while `fat` has a correlation of ***0.76*** also, indicating a _positive relationship_ with `cal`. From the ellipse correlation plot, the darker the blue or red, the more correlated it is. The red indicates a negative correlation while the blue indicates a positive correlation. From the plot, it was observed that the darkest blue is `fat` while the darkest red is `mois`.
+
+_Two desirable predictors for **cal** would be ***mois*** and ***fat***_
+_As observed from the correlation plot, **mois** has a correlation of ***-0.76*** indicating a strong **negative relationship** with **cal** while **fat** has a correlation of ***0.76*** also, indicating a **positive relationship** with **cal**. From the ellipse correlation plot, the darker the blue or red, the more correlated it is. The red indicates a negative correlation while the blue indicates a positive correlation. From the plot, it was observed that the darkest blue is **fat** while the darkest red is **mois**._
 
 ## Q5. Descriptive Analytics: Normality (10 pts.)
 
-5.1 Divide the graph output to 1 row and 2 columns (`par(mfrow = c(1, 2))`). Then draw a histogram for the **cal** variable. Title your diagram **"Calories Histogram"** and label the x axis **"Calories"**. 
+**5.1** Divide the graph output to 1 row and 2 columns (`par(mfrow = c(1, 2))`). Then draw a histogram for the **cal** variable. Title your diagram **"Calories Histogram"** and label the x axis **"Calories"**. 
 
 Then draw a **QQ Plot** to inspect the normality of this variable (tip: this is a 2 step process; first draw the QQ Plot with the `qqnorm()` function and give it a main title of `"Calories QQ Plot"`), then draw the QQ Plot line with the function `qqline()`.
 
@@ -157,18 +158,18 @@ qqline(Pizza$fat)
 par(mfrow = c(1, 1))
 ```
 
-5.2 Briefly answer: Do calories and fat appear to be normally distributed? Why or why not.
+**5.2** Briefly answer: Do calories and fat appear to be normally distributed? Why or why not.
 
 **Answer:**
 
-Calories appears to be normally distributed. There is a noticeable trace of bell shape on the histogram and the qq plot also justifies this. Most of the data are on the line of the qqplot with only a few number of deviation.
+_Calories appears to be normally distributed. There is a noticeable trace of bell shape on the histogram and the qq plot also justifies this. Most of the data are on the line of the qqplot with only a few number of deviation._
 
-Fat does not appear to be normally distributed. The histogram does not reveal a bell shape. Furthermore, the qqplot shows that just a few observations are on the line while most of the observations are off the line.
+_Fat does not appear to be normally distributed. The histogram does not reveal a bell shape. Furthermore, the qqplot shows that just a few observations are on the line while most of the observations are off the line._
 
 
 ## Q6. Descriptive Analytics: Boxplots and ANOV (10 pts.)
 
-6.1 Divide the graph output to 1 row and 2 columns. Then draw 2 boxplots one for **fat** by **brand** and another for **cal** by **brand**. Then reset the graph output back to 1 row and 1 column.
+**6.1** Divide the graph output to 1 row and 2 columns. Then draw 2 boxplots one for **fat** by **brand** and another for **cal** by **brand**. Then reset the graph output back to 1 row and 1 column.
 
 ```{r boxplots}
 par(mfrow = c(1, 2))
@@ -180,7 +181,7 @@ boxplot(cal~brand, data = Pizza)
 par(mfrow = c(1, 1))
 ```
 
-6.2 Then conduct two **ANOVA** tests using the `aov()` function, one to evaluate if **fat** varies **by brand** and another to evaluate if **calories** vary **by brand**. Store the results of the first **ANOVA** test in an object named **aov.fat** [not aov.brand] and the second one named **aov.cal**. Then display the summary of each of these objects, but write the function `cat("\n")` in between the two summaries to separate the displays with a blank line. **Technical note:** the `cat()` function concatenates and prints strings and `"\n"` is the code for a new line.
+**6.2** Then conduct two **ANOVA** tests using the `aov()` function, one to evaluate if **fat** varies **by brand** and another to evaluate if **calories** vary **by brand**. Store the results of the first **ANOVA** test in an object named **aov.fat** [not aov.brand] and the second one named **aov.cal**. Then display the summary of each of these objects, but write the function `cat("\n")` in between the two summaries to separate the displays with a blank line. **Technical note:** the `cat()` function concatenates and prints strings and `"\n"` is the code for a new line.
 
 ```{r anova}
 aov.fat <- aov(fat ~ brand, data = Pizza) # ANOVA - fat by brand
@@ -192,17 +193,18 @@ cat("\n") # The function cat concatenates and prints strings and "\n" is the cod
 summary(aov.cal)
 ```
 
-6.3 Briefly answer: Does fat vary by brand? And, do calories vary by brand? Briefly explain why or why not. Please refer to **both**, the visual boxplot and the quantitative ANOVA output.
+**6.3** Briefly answer: Does fat vary by brand? And, do calories vary by brand? Briefly explain why or why not. Please refer to **both**, the visual boxplot and the quantitative ANOVA output.
 
 **Answer:**
 
-The boxplot for fat by brand tends to overlap in most cases, however, since this overlap is not noticeable in all cases, we can say that fat varies by brand and this is justified by the output of the anova `aov` function with a p-value < 0.0001 indicating a strong evidence that the means between the groups vary.
-Similarly, the variation in calories is more obvious as the plots show a very minute overlap and in most cases they do not overlap. This is also observed in the anova table for cal by brand that there is a strong evidence that calories vary by brand (p-value < 0.0001).
+_The boxplot for fat by brand tends to overlap in most cases, however, since this overlap is not noticeable in all cases, we can say that fat varies by brand and this is justified by the output of the anova **aov** function with a **p-value < 0.0001** indicating a **strong evidence** that the means between the groups vary._
+
+_Similarly, the variation in calories is more obvious as the plots show a very minute overlap and in most cases they do not overlap. This is also observed in the anova table for cal by brand that there is a strong evidence that calories vary by brand (p-value < 0.0001)._
 
 
 ## Q7. Simple Linear Regression Model (10 pts.)
 
-7.1 Fit a **simple** linear regression model object with the `lm()` function to predict **calories** using **fat** as the only predictor. Store your linear model results in an object named **fit.simple**. Then display the `summary()` results. 
+**7.1** Fit a **simple** linear regression model object with the `lm()` function to predict **calories** using **fat** as the only predictor. Store your linear model results in an object named **fit.simple**. Then display the `summary()` results. 
 
 ```{r fit.simple}
 
@@ -210,69 +212,69 @@ fit.simple <- lm(cal ~ fat, data = Pizza)
 summary(fit.simple)
 ```
 
-7.2 If **fat** is in grams per slice and **cal** is in calories per slice, provide a brief **interpretation** of both, the **significance** and **effect** of fat on cal. 
+**7.2** If **fat** is in grams per slice and **cal** is in calories per slice, provide a brief **interpretation** of both, the **significance** and **effect** of fat on cal. 
 **Answer:**
 
-The effect of fat is significant (p-value < 0.0001), providing a _strong evidence_ that `fat` has an effect on `calories` and this effect is positive - indicating that on average, an additional 1 gram per slice of fat is estimated to ***increase*** the calories by 5.28 calories per slice.
+_The effect of fat is significant (p-value < 0.0001), providing a **strong evidence** that **fat** has an effect on **calories** and this effect is **positive** - indicating that on average, an additional 1 gram per slice of fat is estimated to ***increase*** the calories by **5.28 calories per slice.**_
 
 
 
 ## Q8. Linear Regression Model with a Binary Predictor (10 pts.)
 
-8.1 Now fit a larger linear regression model, same as above, but add **import** as a predictor. Name the resulting linear model **fit.dummy**. Then display the `summary()` results. 
+**8.1** Now fit a larger linear regression model, same as above, but add **import** as a predictor. Name the resulting linear model **fit.dummy**. Then display the `summary()` results. 
 
 ```{r fit.dummy}
 fit.dummy <- lm(cal ~ import + fat, data = Pizza)
 summary(fit.dummy)
 ```
 
-8.2 Provide a brief **interpretation** of both, the **significance** and **effect** of **import** on **cal**.
+**8.2** Provide a brief **interpretation** of both, the **significance** and **effect** of **import** on **cal**.
 
 **Answer:**
 
-The effect of **import** on the model is both significant (p-value < 0.0001), providing a strong evidence that `import` has an effect on the model.  This effect is also positive such that on average, holding everything else constant, calories is estimated to be 73.6 calories per slice more for every import.
+_The effect of **import** on the model is both **significant** (p-value < 0.0001) and **positive**, providing a **strong evidence** that **import** has an effect on the model.  This effect is also positive such that on average, holding everything else constant, calories is estimated to be **73.6 calories per slice** ***more*** for every import._
 
 
 
 ## Q9. Multivariate Linear Model (10 pts.)
 
-9.1 Now fit a larger linear regression model to predict calories, using import, fat, carb and mois as predictors. Name the resulting linear model **fit.full**. Then display the `summary()` results. 
+**9.1** Now fit a larger linear regression model to predict calories, using import, fat, carb and mois as predictors. Name the resulting linear model **fit.full**. Then display the `summary()` results. 
 
 ```{r fit.full}
 fit.full <- lm(cal ~ import + fat + carb + mois, data = Pizza)
 summary(fit.full)
 ```
 
-9.2 Then provide a brief **interpretation** of both, the **significance** and **effect** of both, **import** and **fat** on **cal**.
+**9.2** Then provide a brief **interpretation** of both, the **significance** and **effect** of both, **import** and **fat** on **cal**.
 
 **Answer:**
 
-In the full model, although **import** has a positive effect on **cal**, this effect is not significant (p-value = 0.897). However, **fat** has a significantly positive effect on **cal** (p-value < 0.0001) indicating that holding everything else constant, on average, an increase in fat by 1 grams per slice is estimated to increase the calories by 5.03 calories per slice.
+_In the full model, although **import** has a positive effect on **cal**, this effect is **not** significant (p-value = 0.897). However, **fat** has a **significantly positive effect** on **cal** (p-value < 0.0001) indicating that holding everything else constant, on average, an increase in fat by 1 grams per slice is estimated to **increase** the calories by **5.03 calories** per slice._
 
 
-9.3 Briefly answer: The **import** predictor was significant in the model in 8.1 above, but it is no longer significant in this multivariate model. Which result do you believe more, the one in 8.1 or this one? Briefly explain why.
+**9.3** Briefly answer: The **import** predictor was significant in the model in 8.1 above, but it is no longer significant in this multivariate model. Which result do you believe more, the one in 8.1 or this one? Briefly explain why.
 
 **Answer:**
 
-In the `"dummy"` model (8.1), it matters to the model that there is an import or not and this is a somewhat biased model as it doesn't consider other variables. However, on the full model, it shows that fitting the model with additional (significant) predictors makes **import** insignificant. In other words, holding everything else constant, it doesn't matter if the brand was imported or not, it doesn't have an effect on the calories of the Pizza.
+_The result in this multivariate model is more acceptable than in 8.1. In the **"dummy"** model (8.1), the model omitted other predictors that have some correlation with **import** thereby making the model biased. We could say that the **import** variable picked up some of the effects of the other omitted predictors making it appear significant. However, since the full model included the other (significant) predictors (**fat**, **carb**, and **mois**), this improved the explanatory power of the model in a way that is more significant, proving that although **import** still had a positive effect, it is no longer significant considering the presence of the other predictors in the model._
 
 
 ## Q10. Residual Plots and Model Evaluation (10 pts.)
 
-10.1 Let's inspect the results and provide some final storytelling. First, `plot()` the **fit.full** object. This function yields 4 residual plots, but for now, we are only interested in the second residual plot, so add the attribute `which = 2`, which renders the QQ Plot of the residuals. 
+**10.1** Let's inspect the results and provide some final storytelling. First, `plot()` the **fit.full** object. This function yields 4 residual plots, but for now, we are only interested in the second residual plot, so add the attribute `which = 2`, which renders the QQ Plot of the residuals. 
 
 ```{r residualplot}
 plot(fit.full, which = 2)
 ```
 
-10.2 Then conduct an **ANOVA** test to compare all 3 models together, **fit.simple, fit.dummy and fit.full.
+**10.2** Then conduct an **ANOVA** test to compare all 3 models together, **fit.simple, fit.dummy and fit.full.
 
 ```{r residuals}
 anova(fit.simple, fit.dummy, fit.full)
 ```
 
-10.3 Which of the three models is preferred? Briefly explain why. 
+**10.3** Which of the three models is preferred? Briefly explain why. 
 
 **Answer:**
 
-The full model is preferred. From the ANOVA test, it was observed that there is a significant difference between the full model and the dummy model. Further more, the residual sum of squared of the dummy model is very high (181469 on 297 degrees of freedom) compared to the full model where it is much more reduced (1406 on 295 degrees of freedom) indicating a lesser variation in the latter. This is so because looking at the full model, approximately 100% of the variability of the response variable _cal_ is explained by the model while in the dummy model, about 84.2% of the variability can be explained by the model.
+_The full model is preferred. From the ANOVA test, it was observed that there is a **significant** difference between the full model and the dummy model. Further more, the residual sum of squared of the dummy model is very high (181469 on 297 degrees of freedom) compared to the full model where it is much more reduced (1406 on 295 degrees of freedom) indicating a lesser variation in the latter. This is so because looking at the full model, approximately 100% of the variability of the response variable cal is explained by the model while in the dummy model, about 84.2% of the variability can be explained by the model._
