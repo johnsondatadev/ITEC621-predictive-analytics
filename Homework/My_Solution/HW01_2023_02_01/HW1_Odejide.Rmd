@@ -3,13 +3,13 @@ title: "ITEC 621 - Homework 1"
 author: "Johnson ODEJIDE"
 date: "February 05, 2023"
 output:
+  word_document:
+    toc: yes
+    toc_depth: 2
   html_document:
     toc: yes
     toc_depth: '2'
     df_print: paged
-  word_document:
-    toc: yes
-    toc_depth: 2
 subtitle: R, Stats and Regression Refresher
 ---
 
@@ -131,8 +131,7 @@ corrplot(Pizza.cor, method = "ellipse", order = "hclust")
 
 **Answer:**
 
-_Two desirable predictors for **cal** would be ***mois*** and ***fat***_
-_As observed from the correlation plot, **mois** has a correlation of ***-0.76*** indicating a strong **negative relationship** with **cal** while **fat** has a correlation of ***0.76*** also, indicating a **positive relationship** with **cal**. From the ellipse correlation plot, the darker the blue or red, the more correlated it is. The red indicates a negative correlation while the blue indicates a positive correlation. From the plot, it was observed that the darkest blue is **fat** while the darkest red is **mois**._
+_Two desirable predictors for **cal** would be ***mois*** and ***fat***. As observed from the correlation plot, **mois** has a correlation of ***-0.76*** indicating a strong **negative relationship** with **cal** while **fat** has a correlation of ***0.76*** also, indicating a **positive relationship** with **cal**. From the ellipse correlation plot, the darker the blue or red, the more correlated it is. The red indicates a negative correlation while the blue indicates a positive correlation. From the plot, it was observed that the darkest blue is **fat** while the darkest red is **mois**._
 
 ## Q5. Descriptive Analytics: Normality (10 pts.)
 
@@ -249,14 +248,14 @@ summary(fit.full)
 
 **Answer:**
 
-_In the full model, although **import** has a positive effect on **cal**, this effect is **not** significant (p-value = 0.897). However, **fat** has a **significantly positive effect** on **cal** (p-value < 0.0001) indicating that holding everything else constant, on average, an increase in fat by 1 grams per slice is estimated to **increase** the calories by **5.03 calories** per slice._
+_In the full model, although **import** has a positive effect on **cal**, this effect is **not** significant (p-value = 0.897). However, **fat** has a **significantly positive effect** on **cal** (p-value < 0.0001) indicating that holding everything else constant, on average, an increase in fat by 1 grams per slice is estimated to **increase** the calories by **5.03 calories per slice**._
 
 
 **9.3** Briefly answer: The **import** predictor was significant in the model in 8.1 above, but it is no longer significant in this multivariate model. Which result do you believe more, the one in 8.1 or this one? Briefly explain why.
 
 **Answer:**
 
-_The result in this multivariate model is more acceptable than in 8.1. In the **"dummy"** model (8.1), the model omitted other predictors that have some correlation with **import** thereby making the model biased. We could say that the **import** variable picked up some of the effects of the other omitted predictors making it appear significant. However, since the full model included the other (significant) predictors (**fat**, **carb**, and **mois**), this improved the explanatory power of the model in a way that is more significant, proving that although **import** still had a positive effect, it is no longer significant considering the presence of the other predictors in the model._
+_The result in this multivariate model is more acceptable than in 8.1. In the **"dummy"** model (8.1), the model omitted other predictors that have some correlation with **import** thereby making the model biased. We could say that the **import** variable picked up some of the effects of the other omitted predictors making it appear significant. However, since the full model included the other (significant) predictors (**fat**, **carb**, and **mois**), this improved the explanatory power of the model in a way that is more significant, showing that although **import** still had a positive effect, it is no longer significant considering the presence of the other predictors in the model._
 
 
 ## Q10. Residual Plots and Model Evaluation (10 pts.)

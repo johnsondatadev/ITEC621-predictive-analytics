@@ -1,0 +1,215 @@
+---
+title: "ITEC 621 Exercise 4 - Data Pre-Processing"
+subtitle: "Transformations"
+author: "Enter your name here"
+date: "Enter your submission date here"
+output:
+  html_document:
+   toc: true
+   toc_depth: 2
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo = T, include = T, warning = F, message = F)
+```
+
+## General Instructions
+
+Download the **Ex4_DataPreProcessing_YourLastName.Rmd** R Markdown file and save it with your own **last name** and **date**. Complete all your work in that template file.
+
+**IMPORTANT:**
+
+**Knitting to HTML:** We normally knit our R Markdown scripts to a Word file, but in this exercise I'm asking yout to practice with theknitting to an HTML file, which you could publish on a web site. Knit your .Rmd file into an **HTML** file (the output html_document header is already provided for you in the template). Your knitted document **must display your R commands**. Knitting and formatting is worth up to **3 points** in this and all exercises.  
+
+**Formatting:** Please ensure that all your text narratives are fully visible (if I can't see the text, I can't grade it). Also, please ensure that your **Table of Contents** is visible and properly formatted. Also, please prepare your R Markdown file with a **professional appearance**, as you would for top management or an important client. Please, write all your interpretation narratives in the text area, outside of the R code chunks, with the appropriate formatting and businesslike appearance. **Note:** I write all my interpretation solutions inside of the R code chunk to suppress their display until I print the solution, but don't need to do this. I will read your submission as a report to a client or senior management. Anything unacceptable to that audience is unacceptable to me.
+
+**Important Formatting Tip About the # Tag:** Many students submit their knitted file with text narratives embedded in the table of contents and with the text in the main body in large blue font. This is **NOT** proper business formatting. This is the issue: if you want to write comments inside an R code chunk, you need to use the # tag, which tells R that that line should not be executed and it is there as a comment only. However, if you use the # tag in the text area, R Markdown treats this as **Heading 1** text and ## as **Heading 2** text. Heading text will appear in the table of contents and in large blue font in the main text. Please **DO NOT** use # tags in the main text, except for actual headers and sub-headers in your document.
+
+**Submission**: Submit your knitted homework HTML file in Canvas. There is no need to submit the .Rmd file, just your knitted file.  
+
+## Data Work - SoftwareData.csv
+
+The first part of this exercise will be done with the This analysis will be done with the **SoftwareData.csv** data set
+
+Read the **SoftwareData.csv** data file into a data frame.This file is a subset from data I collected from the configuration management system of a large software repository that keeps statistics about software modifications for this company. Each observation represents a software **modification request (MR)**. Once approved, the MR number becomes the modification identifier. An MR record contains the following information:
+
+- **dev.days**: number of days it took to complete the MR
+- **priority**: categorical - VeryHigh, High, Medium or Low
+- **num.modifs**: number of file modifications made in the MR
+- **num.modules**: number of software modules affected by the MR
+- **teams.size**: number of software developers who worked on the MR
+
+Use the `read.table()` function with the `header = T , sep = ",", stringsAsFactors = T` parameters. If you are using R vesion 3.xx the **priority** variable will be read correctly as a **factor**. But version 4.xx will read it as a **character**, so `stringsAsFactors = T` will read that variable correctly as a factor. Store the data read in a data frame named **swd**. Briefly review the data set outside of the script (in the R Console or from the Environment tab). 
+
+Also, set the `options(scipen = 4)` to minimize the use of scientific notation.
+
+
+```{r prep}
+# Done for you
+swd <- read.table("SoftwareData.csv", 
+                  header = T, 
+                  sep = ",", 
+                  stringsAsFactors = T)
+
+options(scipen = 4)
+```
+
+## 1. Categorical (Factor) Predictors
+
+1.1 The **priority** variable is categorical (i.e., factor). Firs, list the `class()` of this variable and ensure that it is a **factor** variable. Also, the levels of this factor variable using the `levels()` function. 
+
+```{r levels}
+
+```
+
+1.2 Fit an OLS model using **lm()** to predict the time to completion of the MR,  **dev.days**, using **priority, num.modifs, num.modules** and **team.size** as predictors. Store your **lm()** object results in **lm.fit**. Then display the summary() results.
+
+```{r lm}
+
+```
+
+1.3 Briefly interpret both, the **priorityLow coefficient** and it's **p-value** (3 lines max)
+
+**Answer:** 
+
+
+
+1.4 Notice that the reference level (i.e., the excluded category) is **High**, which is the first alphabetically, but is in the middle of the scale so it is probably not a very useful reference level. Let's try using **Low** as the reference level, which is more useful for comparisons. Use the `relevel()` function to re-level the **swd$priority** factor variable to set **"Low"** (`ref = "Low"`) as the reference level and then fit the same regression model above, but this time store it in **lm.fit.rlv**. Then, display the model results with the `summary()` function.
+
+```{r relevel}
+
+```
+
+1.5 Briefly explain how the 3 priority coefficients changed (in 3 to 4 lines)
+
+**Answer:** 
+
+
+
+## 2. Log-Linear Model
+
+2.1 Display a **histogram** and a **qqplot** for the outcome variable **swd$dev.days**. To make the plot more informative, add a label in the vertical axis of `qqnorm()` with the parameter `ylab = "Development Days"`. 
+
+Also, display a residual `plot()` for the **lm.fit** model above, using the parameter `which = 2` to display only the second plot only, which shows the qqplot for residuals.
+
+```{r fig.width = 8, fig.height = 6}
+
+```
+
+2.2 Do you think we should **log-transform** the **dev.days** variable? Why or why not? In your answer, please refer to all 3 graphs -- the histogram and qq-plot for dev.days and the residual plot for lm.fit.
+
+**Answer:** 
+
+
+
+2.3 Fit a **log-linear** model and store the results in an object named **lm.fit.log**. Display the `summary()` results. 
+
+```{r log}
+
+```
+
+It is always a good idea to re-check the normal distribution of the outcome variable and residuals with the logged outcome variable. Repeat the graphs you did in 2.1 but using the `log()` function this time. As you did in 2.1 above, add a `ylab =` parameter to `qqnorm()` to label the vertical axis `"Log (Development Days)"`.
+
+```{r logplots}
+
+```
+
+Please check this and briefly comment on whether the normality issue was corrected. 
+
+**Answer:** 
+
+
+
+2.4 We suspect that the predictor **num.modifs** is not normally distributed. While this is not a problem for OLS, it is probably creating some non-linearity issues with the outcome variable dev.days. First, draw a QQ Plot for this predictor variable, along with the QQ Plot of the respective log( ) of the variable. Divide the output into 2 rows x 2 columns. Then render the 2 QQ Plots side by side. The first plot should have a vertical axis label "Number of Modifications", and the second plot should have a vertical axis label "Log (Number of Modifications). Then reset the output to 1 row and 1 column. 
+
+```{r fig.width=10, fig.height=6}
+
+```
+
+2.5 Fit a **log-log** model and store the results in an object named **lm.fit.loglog**. Log the outcome variable **dev.days** and the predictor **num.modifs**. Include the raw (not logged) predictors **priority**, **num.modules** and **team.size**. Display the `summary()` results and then plot the **lm.fit.loglog** residual QQ Plot using the `which = 2` parameter.
+
+```{r loglog}
+
+```
+
+2.4 Which is the best model of the 3, lm.fit (linear), lm.fit.log (log-linear) or lm.fit.loglog (log-log)? In your answer, refer to the p-values of the coefficients and the adjusted R-squares.
+
+**Technical Note:** Since the logged models are NOT nested within the  others, you **can't use ANOVA** to compare them. Just use the **Adjusted R-squared** for now (we will use cross-validation for this purpose later on).
+
+**Answer:** 
+
+
+
+## 3. Standardized Regression
+
+3.1 As we discussed, there are two ways to run standardized regressions. The first one is to use the `scale()` function to standardize either the entire data set, or just specific variables of interest. However, standardizing individual variables is a tedious process. It is much easier to fit a plain OLS regression and then extract standardized regression coefficients from raw coefficients and display both of them side by side. Since you already have a fitted linear model **lm.fit**, load the **{lm.beta}** library and use the `lm.beta()` function to extract standardized regression results. Store these results in an object named **lm.fit.std** and then display a `summary()` for this object.
+
+```{r std}
+
+```
+
+3.2 Please provide a brief interpretation of both, the raw and standardized effects on **dev.days"" of each, **num.modules** and **team.size**.
+
+**Answer:** 
+
+
+**Some Insights** (about the effect of team.size): Can you figure out why larger teams take longer to develop software? You would think that more people in a team speed up the development, but these results support the opposite. Well, as it turns out, this supports Fred Brooks' (seminal The Mythical Man-Month book) argument that adding members to a software team brings in more productive resources, but it increases exponentially the coordination challenges, which generally end up increasing the development time. Statistically, you could simply say that keeping priority, number of modifications needed, and number of modules affected, team size does not provide incremental benefits, but on the contrary, it is detrimental to software development speed.
+
+
+## 4. Multivariate Time Series
+
+4.1 Let's re-do a slightly different specification of the class example with the **HousingStarts.csv** data set to get some practice with **Durbin-Watson** testing and lagging. In this reformulated example, we are predicting house starts in thousands of units, **KUnits**, with use the variable **T** for time (i.e., month sequence 1, 2, etc.). In the class example, we used dummy variables Q1, Q2, etc. to model the quarter, but this time we will use an alternative specification with a categorical variable **Qtr**, which has a value of Q1 for the first quarter, Q2 for the second quarter, etc. In the R script code that follows, I first read the data, fit the model, and show the summary results. 
+
+```{r}
+# Done for you
+HousingStarts <- read.csv("HousingStarts.csv", 
+                          header = T, 
+                          sep = ",", 
+                          stringsAsFactors = T)
+
+lm.KUnits <- lm(KUnits ~ T + Qtr, data = HousingStarts)
+summary(lm.KUnits)
+```
+
+Now examine the model for the assumption of residual independence. That is, first examine the residual plot to see if you notice a cyclical pattern with the residuals. Plot **HousingStarts$T** against **m.KUnits$residuals**. Use the `xlab =` and `ylab =` parameters to display the X and Y labels shown below. Also use the `abline(0, 0)` function to draw a horizontal line, but add the `col = ` parameter to make the line red.
+
+Then load the **{lmtest}** library and test for serial correlation with the Durbin-Watson test **dwtest()**.
+
+```{r}
+
+```
+
+4.2 Is there serial correlation in the model? Is it positive or negative? Use both, the **residual plot** and the results of the **Durbin-Watson** test to briefly explain why or why not.
+
+**Answer:** 
+
+
+
+4.3 Following the class example, load the **{DataCombine}** library and then use the `slide()` function to create a new variable called **KUnits.L1** containing the value of KUnits, lagged by one period. Save the new lagged data set with a different name like **HousingStarts.L1**. Then fit a lagged linear model just like the one above (you can copy/edit if you wish), but include the new lagged variable **KUnits.L1** as a predictor, and use the lagged data frame **HousingStarts.L1** instead. Save the results in a linear model object named **lm.KUnits.L1** and display the `summary()` results of the model.
+
+```{r}
+
+```
+
+Then, render a plot with the **residuals** in the vertical axis and time (i.e., **T**) in the horizontal, with the appropriate x and y axis labels shown, and a horizontal red line at 0.
+
+**Technical Tip**: When you lag one period, you lose the first observation because the first observation does not have a lagged value. Consequently, when you plot the residuals, you need to remove the first observation from the time **T** vector. You can accomplish this with the [-1] index right next to **T** shown below, which removes the first observation in the vector.
+
+Also, conduct a **DW test** of the new lagged model **lm.KUnits.L1**.
+
+```{r}
+
+```
+
+4.4 Please indicate if the serial correlation problem was resolved. Use both, the **residual plot** and the results of the **Durbin-Watson** test to briefly explain why or why not.
+
+**Answer:** 
+
+
+
+4.5 Please interpret the effect of QtrQ4 and KUnits.L1
+
+**Answer:** 
+
+
+
