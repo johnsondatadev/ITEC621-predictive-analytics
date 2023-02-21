@@ -1,7 +1,7 @@
 ---
 title: "ITEC 621 Exercise 3 - Basic Models"
-author: "J. Alberto Espinosa"
-date: "January 28, 2023"
+author: "Johnson Odejide"
+date: "February 16, 2023"
 output:
   html_document:
     toc: yes
@@ -84,7 +84,9 @@ bptest(fit.ols)
 
 1.3 Is there a problem with Heteroskedasticity? Why or why not? In your answer, please refer to **both**, the residual plot and the BP test.  
     
-The residual plot shows some pattern of increasing variance from left to right indicating the presence of Heteroskedasticity. This is also confirmed in the result of the Breusch-Pagan test, resulting in a p-value of 0.017 which is less than 0.05 showing that there is the presence of Heteroskedasticity.
+_The residual plot shows some pattern of uneven variance which appears to have been increasing from left to right indicating the presence of Heteroskedasticity. As the predicted salaries increase (get larger), the errors also tend to increase (grow larger) as well._ 
+
+_This is also confirmed in the result of the Breusch-Pagan test which is significant at a p-value of 0.017 showing that there is the presence of Heteroskedasticity. This condition of heteroskedasticity makes WLS a more efficient estimator than the OLS in this case_
 
 
 ## 2. Weighted Least Squares (WLS) Model
@@ -163,9 +165,9 @@ summary(fit.wglm)
 
 * The WLS and WGLM yielded the same result except that the statistics are reported differently. For instance the WGLM reported the deviance while WLS reported the p-value, F-Statistics, R-Squared, etc.
 
-* At p-value<0.05, **Assists** and **HmRun** are not significant in the OLS model, they are however significant in WLS and WGLM models.
+* At p-value<0.05, **Assists** and **HmRun** are not significant in the OLS model, they are however significant in WLS and WGLM models. The remaining four (4) significant predictors in the OLS model remained significant in the WLS and WGLM models. 
 
-* Another thing to note is that the value of R-Squared got reduced in the WLS model. However, we cannot compare these two R-Squared as that of WLS had to do with the weighted variance while OLS does not.
+* Another thing to note is that the value of R-Squared got reduced in the WLS model from 0.311 to 0.175. However, we cannot compare these two R-Squared as that of WLS had to do with the weighted variance while WGLM has to do with deviance (2LL).
 
 
 ## 3. Logistic Regression
@@ -181,7 +183,7 @@ For sanity check, list the first 10 rows and 8 columns of this data set.
 ```{r}
 myopia <- read.table("../../Dataset/myopia.csv", header = T, row.names = 1, sep = ",")
 
-head(myopia)
+myopia[1:10, 1:8]
 ```
 
 3.2 Fit a logistic model to predict whether a child is **myopic**, using `age + female + sports.hrs + read.hrs + mommy + dadmy` as predictors. Use the parameters `family = "binomial"(link = "logit")` to specify the Logistic model. Store the results in an object named **myopia.logit**. Display the `summary()` results. Then display the `summary()` results.
@@ -208,10 +210,11 @@ print(cbind("Log-Odds" = log.odds, "Odds" = odds), digits = 2)
  
 3.5 Provide a brief interpretation of both, the log-odds and odds effects of **read.hrs** and **mommy**. Please refer to the respective variable **measurement units** in your discussion.
 
-Both effects are significant. 
-For **read.hrs**, we estimate that on average, holding everything else constant, for every additional hours per week outside of school the child spent reading for pleasure, the log odds of being myopic within the first five years of follow up increases by 0.799 while the Odds increase by a factor of 2.22.
+_Both effects are significant._ 
 
-Similarly, for **mommy**, one could say that on average, holding everything else constant, if the mother of the child is myopic, the log odds of the child being myopic within the first five years of follow up increases by 2.937 while the Odds increase by a factor of 18.87
+_For **read.hrs**, we estimate that on average, holding everything else constant, for each additional hours per week outside of school the child spent reading for pleasure, the log odds of being myopic within the first five years of follow up increases by 0.799 while the Odds increase by a factor of 2.22._
+
+_Similarly, for **mommy**, one could say that on average, holding everything else constant, if the mother of the child is myopic, the log-odds of the child being myopic within the first five years of follow up increases by 2.937 while the Odds increase by a factor of 18.87_
 
 
 ## 4. Decision Trees

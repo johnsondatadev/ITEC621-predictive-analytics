@@ -1,12 +1,15 @@
 ---
 title: "ITEC 621 Exercise 4 - Data Pre-Processing"
-subtitle: "Transformations"
-author: "Enter your name here"
-date: "Enter your submission date here"
+author: "Johnson Odejide"
+date: "February 17, 2023"
 output:
+  word_document:
+    toc: yes
+    toc_depth: '2'
   html_document:
-   toc: true
-   toc_depth: 2
+    toc: yes
+    toc_depth: 2
+subtitle: Transformations
 ---
 
 ```{r global_options, include=FALSE}
@@ -46,7 +49,7 @@ Also, set the `options(scipen = 4)` to minimize the use of scientific notation.
 
 ```{r prep}
 # Done for you
-swd <- read.table("SoftwareData.csv", 
+swd <- read.table("../../Dataset/SoftwareData.csv", 
                   header = T, 
                   sep = ",", 
                   stringsAsFactors = T)
@@ -59,31 +62,37 @@ options(scipen = 4)
 1.1 The **priority** variable is categorical (i.e., factor). Firs, list the `class()` of this variable and ensure that it is a **factor** variable. Also, the levels of this factor variable using the `levels()` function. 
 
 ```{r levels}
-
+class(swd$priority)
+levels(swd$priority)
 ```
 
 1.2 Fit an OLS model using **lm()** to predict the time to completion of the MR,  **dev.days**, using **priority, num.modifs, num.modules** and **team.size** as predictors. Store your **lm()** object results in **lm.fit**. Then display the summary() results.
 
 ```{r lm}
-
+lm.fit <- lm(dev.days ~ priority + num.modifs + num.modules + team.size, data = swd)
+summary(lm.fit)
 ```
 
-1.3 Briefly interpret both, the **priorityLow coefficient** and it's **p-value** (3 lines max)
+1.3 Briefly interpret both, the **priorityLow coefficient** and its **p-value** (3 lines max)
 
 **Answer:** 
 
+_The effect of **priorityLow** is positive and it is significant at the p-value=0.002. On average, holding everything else constant, the number of days it takes to complete low priority modification requests (MRs) is about 20.64 longer than the number of days taken to complete High priority MRs (which is the reference level)._
 
 
 1.4 Notice that the reference level (i.e., the excluded category) is **High**, which is the first alphabetically, but is in the middle of the scale so it is probably not a very useful reference level. Let's try using **Low** as the reference level, which is more useful for comparisons. Use the `relevel()` function to re-level the **swd$priority** factor variable to set **"Low"** (`ref = "Low"`) as the reference level and then fit the same regression model above, but this time store it in **lm.fit.rlv**. Then, display the model results with the `summary()` function.
 
 ```{r relevel}
+swd$priority <- relevel(swd$priority, ref = "Low")
 
+lm.fit.rlv <- lm(dev.days ~ priority + num.modifs + num.modules + team.size, data = swd)
+summary(lm.fit.rlv)
 ```
 
 1.5 Briefly explain how the 3 priority coefficients changed (in 3 to 4 lines)
 
 **Answer:** 
-
+_Since **priorityLow** is now the reference, it compares the effect of the other priorities relative to Low. Hence, the 3 priority coefficients are now negative and significant. On average, holding everything else constant, it takes about 20.64, 17.39, and 30.55 days faster to perform high, medium, and very high priority modifications respectively than a Low priority modification._
 
 
 ## 2. Log-Linear Model
@@ -93,43 +102,74 @@ options(scipen = 4)
 Also, display a residual `plot()` for the **lm.fit** model above, using the parameter `which = 2` to display only the second plot only, which shows the qqplot for residuals.
 
 ```{r fig.width = 8, fig.height = 6}
+hist(swd$dev.days)
 
+qqnorm(swd$dev.days, ylab = "Development Days")
+qqline(swd$dev.days)
+
+plot(lm.fit, which = 2)
 ```
 
 2.2 Do you think we should **log-transform** the **dev.days** variable? Why or why not? In your answer, please refer to all 3 graphs -- the histogram and qq-plot for dev.days and the residual plot for lm.fit.
 
 **Answer:** 
 
+_The histogram is skewed to the right indicating the need to transform. Furthermore, both qq-plots shows deviation from the qq-line indicating that neither dev.days nor the residuals are normally distributed. Hence, we can try to log-transform the outcome variable, that is, dev.days_
 
 
 2.3 Fit a **log-linear** model and store the results in an object named **lm.fit.log**. Display the `summary()` results. 
 
 ```{r log}
+lm.fit.log <- lm(log(dev.days) ~ priority + num.modifs + num.modules + team.size, data = swd)
 
+summary(lm.fit.log)
 ```
 
 It is always a good idea to re-check the normal distribution of the outcome variable and residuals with the logged outcome variable. Repeat the graphs you did in 2.1 but using the `log()` function this time. As you did in 2.1 above, add a `ylab =` parameter to `qqnorm()` to label the vertical axis `"Log (Development Days)"`.
 
 ```{r logplots}
+hist(log(swd$dev.days))
 
+qqnorm(log(swd$dev.days), ylab = "Log (Development Days)")
+qqline(log(swd$dev.days))
+
+plot(lm.fit.log, which = 2)
+
+qqline
 ```
 
 Please check this and briefly comment on whether the normality issue was corrected. 
 
 **Answer:** 
 
+_The distribution of the outcome variable dev.days now looks somewhat normal, although not perfect, it showed some substantial improvement compared to when it was not transformed._
+
+_Following the qqplot for log(dev.days), the distribution is roughly aligned with the qq-line, although this does not hold true for lower values of dev.days which appear to be off the qq-line._
+
+_Additionally, the residual plot indicates the normality of distribution at the center with the very high and very low values of dev.days departing from normality._
 
 
 2.4 We suspect that the predictor **num.modifs** is not normally distributed. While this is not a problem for OLS, it is probably creating some non-linearity issues with the outcome variable dev.days. First, draw a QQ Plot for this predictor variable, along with the QQ Plot of the respective log( ) of the variable. Divide the output into 2 rows x 2 columns. Then render the 2 QQ Plots side by side. The first plot should have a vertical axis label "Number of Modifications", and the second plot should have a vertical axis label "Log (Number of Modifications). Then reset the output to 1 row and 1 column. 
 
 ```{r fig.width=10, fig.height=6}
+par(mfrow = c(1, 2))
 
+qqnorm(swd$num.modifs, ylab = "Number of Modifications")
+qqline(swd$num.modifs)
+
+qqnorm(log(swd$num.modifs), ylab = "Log (Number of Modifications)")
+qqline(log(swd$num.modifs))
+
+par(mfrow = c(1, 1))
 ```
 
 2.5 Fit a **log-log** model and store the results in an object named **lm.fit.loglog**. Log the outcome variable **dev.days** and the predictor **num.modifs**. Include the raw (not logged) predictors **priority**, **num.modules** and **team.size**. Display the `summary()` results and then plot the **lm.fit.loglog** residual QQ Plot using the `which = 2` parameter.
 
 ```{r loglog}
+lm.fit.loglog <- lm(log(dev.days) ~ priority + log(num.modifs) + num.modules + team.size, data = swd)
+summary(lm.fit.loglog)
 
+plot(lm.fit.loglog, which = 2)
 ```
 
 2.4 Which is the best model of the 3, lm.fit (linear), lm.fit.log (log-linear) or lm.fit.loglog (log-log)? In your answer, refer to the p-values of the coefficients and the adjusted R-squares.
@@ -138,6 +178,7 @@ Please check this and briefly comment on whether the normality issue was correct
 
 **Answer:** 
 
+_The log-log model is the best because it has the highest adjusted R-square, followed by the log-linear model. Both log models show a significant difference in adjusted R-square when compared to the linear OLS model. There are also more significant coefficients which also have stronger levels of significance._
 
 
 ## 3. Standardized Regression
@@ -145,12 +186,22 @@ Please check this and briefly comment on whether the normality issue was correct
 3.1 As we discussed, there are two ways to run standardized regressions. The first one is to use the `scale()` function to standardize either the entire data set, or just specific variables of interest. However, standardizing individual variables is a tedious process. It is much easier to fit a plain OLS regression and then extract standardized regression coefficients from raw coefficients and display both of them side by side. Since you already have a fitted linear model **lm.fit**, load the **{lm.beta}** library and use the `lm.beta()` function to extract standardized regression results. Store these results in an object named **lm.fit.std** and then display a `summary()` for this object.
 
 ```{r std}
+library(lm.beta)
 
+lm.fit.std <- lm.beta(lm.fit)
+summary(lm.fit.std)
+
+summary(lm.fit)
 ```
 
-3.2 Please provide a brief interpretation of both, the raw and standardized effects on **dev.days"" of each, **num.modules** and **team.size**.
+3.2 Please provide a brief interpretation of both, the raw and standardized effects on **dev.days** of each, **num.modules** and **team.size**.
 
 **Answer:** 
+
+_The effect of num.modules on dev.days is significant at the level of p<0.01. On average, holding everything else constant, when the number of software modules affected by the modification requested for increases by 1, number of days it takes to complete the modification request (MR) increases by 3.13. When standardized, the coefficient of num.modules show that on average, holding the other predictors constant, when the number of software modules affected by the modification requested for increases by 1 standard deviation, the number of days it takes to complete the MR increases by 0.1696 standard deviations._
+
+_Similarly, the raw effect of team.size on dev.days is significant at the level of p<0.01, showing that on average, holding all other predictors constant, when the number of software developers who worked on the MR as a team increases by 1, the number of days it takes to complete the MR increases by 12.42. The standardized effect show that on average, holding everything else constant, when the size of the team of software developers who worked on the MR increases by 1 standard deviation, the number of days it takes to complete the MR increases by 0.1342 standard deviations._
+
 
 
 **Some Insights** (about the effect of team.size): Can you figure out why larger teams take longer to develop software? You would think that more people in a team speed up the development, but these results support the opposite. Well, as it turns out, this supports Fred Brooks' (seminal The Mythical Man-Month book) argument that adding members to a software team brings in more productive resources, but it increases exponentially the coordination challenges, which generally end up increasing the development time. Statistically, you could simply say that keeping priority, number of modifications needed, and number of modules affected, team size does not provide incremental benefits, but on the contrary, it is detrimental to software development speed.
@@ -162,7 +213,7 @@ Please check this and briefly comment on whether the normality issue was correct
 
 ```{r}
 # Done for you
-HousingStarts <- read.csv("HousingStarts.csv", 
+HousingStarts <- read.csv("../../Dataset/HousingStarts.csv", 
                           header = T, 
                           sep = ",", 
                           stringsAsFactors = T)
@@ -170,25 +221,47 @@ HousingStarts <- read.csv("HousingStarts.csv",
 lm.KUnits <- lm(KUnits ~ T + Qtr, data = HousingStarts)
 summary(lm.KUnits)
 ```
+```{r}
+str(HousingStarts)
+```
 
-Now examine the model for the assumption of residual independence. That is, first examine the residual plot to see if you notice a cyclical pattern with the residuals. Plot **HousingStarts$T** against **m.KUnits$residuals**. Use the `xlab =` and `ylab =` parameters to display the X and Y labels shown below. Also use the `abline(0, 0)` function to draw a horizontal line, but add the `col = ` parameter to make the line red.
+Now examine the model for the assumption of residual independence. That is, first examine the residual plot to see if you notice a cyclical pattern with the residuals. Plot **HousingStarts\$T** against **lm.KUnits\$residuals**. Use the `xlab =` and `ylab =` parameters to display the X and Y labels shown below. Also use the `abline(0, 0)` function to draw a horizontal line, but add the `col = ` parameter to make the line red.
 
 Then load the **{lmtest}** library and test for serial correlation with the Durbin-Watson test **dwtest()**.
 
 ```{r}
+plot(HousingStarts$T, lm.KUnits$residuals,
+     xlab = "Month",
+     ylab = "Residuals")
 
+abline(0, 0, col = "red")
+
+library(lmtest)
+
+dwtest(lm.KUnits)
 ```
 
 4.2 Is there serial correlation in the model? Is it positive or negative? Use both, the **residual plot** and the results of the **Durbin-Watson** test to briefly explain why or why not.
 
 **Answer:** 
 
+_Yes, there is serial correlation and it is positive. This is indicated by the cyclical pattern over time in the residual plot and the result of the Durbin-Watson is significant at p<0.01 and positive at DW=0.2. This confirms the presence of strong positive correlation._
 
 
 4.3 Following the class example, load the **{DataCombine}** library and then use the `slide()` function to create a new variable called **KUnits.L1** containing the value of KUnits, lagged by one period. Save the new lagged data set with a different name like **HousingStarts.L1**. Then fit a lagged linear model just like the one above (you can copy/edit if you wish), but include the new lagged variable **KUnits.L1** as a predictor, and use the lagged data frame **HousingStarts.L1** instead. Save the results in a linear model object named **lm.KUnits.L1** and display the `summary()` results of the model.
 
 ```{r}
+library(DataCombine)
 
+HousingStarts.L1 <- slide(HousingStarts, 
+                          Var = "KUnits", 
+                          NewVar = "KUnits.L1", 
+                          slideBy = -1)
+
+lm.KUnits.L1 <- lm(KUnits ~ KUnits.L1 + T + Qtr, 
+                   data = HousingStarts.L1)
+
+summary(lm.KUnits.L1)
 ```
 
 Then, render a plot with the **residuals** in the vertical axis and time (i.e., **T**) in the horizontal, with the appropriate x and y axis labels shown, and a horizontal red line at 0.
@@ -198,18 +271,25 @@ Then, render a plot with the **residuals** in the vertical axis and time (i.e., 
 Also, conduct a **DW test** of the new lagged model **lm.KUnits.L1**.
 
 ```{r}
+plot(HousingStarts$T[-1], residuals(lm.KUnits.L1),
+     xlab = "Month",
+     ylab = "Residuals")
+abline(0, 0, col = 'red')
 
+dwtest(lm.KUnits.L1)
 ```
 
 4.4 Please indicate if the serial correlation problem was resolved. Use both, the **residual plot** and the results of the **Durbin-Watson** test to briefly explain why or why not.
 
 **Answer:** 
 
-
+_Yes, the serial correlation was resolved. The residual plot does not show any specific pattern. It rather shows a cloud of data. The Durbin-Watson statistic 2.4 which is within the threshold for lack of serial correlation and as observed, the p-value indicates that it is not significant. Hence, we conclude that there is no serial correlation._
 
 4.5 Please interpret the effect of QtrQ4 and KUnits.L1
 
 **Answer:** 
 
+_The effect of Qtr4 is negative and highly significant at the level of p<0.001. On average, holding everything else constant, there are 16.68 thousand fewer units of houses started in the fourth quarter, compared to the first quarter._
 
+_The effect of KUnits.L1 is positive and also highly significant at p<0.001 level. On average, holding everything else constant, for every one thousand units of houses started in a given period, there are 969 units of houses started in the following period_
 

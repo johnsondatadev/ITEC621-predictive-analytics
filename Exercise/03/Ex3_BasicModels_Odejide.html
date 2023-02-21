@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="J. Alberto Espinosa" />
+<meta name="author" content="Johnson Odejide" />
 
-<meta name="date" content="2023-01-28" />
+<meta name="date" content="2023-02-16" />
 
 <title>ITEC 621 Exercise 3 - Basic Models</title>
 
@@ -1623,8 +1623,8 @@ display: none;
 
 <h1 class="title toc-ignore">ITEC 621 Exercise 3 - Basic Models</h1>
 <h3 class="subtitle">WLS, Logistic and Trees</h3>
-<h4 class="author">J. Alberto Espinosa</h4>
-<h4 class="date">January 28, 2023</h4>
+<h4 class="author">Johnson Odejide</h4>
+<h4 class="date">February 16, 2023</h4>
 
 </div>
 
@@ -1762,11 +1762,15 @@ bptest(fit.ols)</code></pre>
 <p>1.3 Is there a problem with Heteroskedasticity? Why or why not? In
 your answer, please refer to <strong>both</strong>, the residual plot
 and the BP test.</p>
-<p>The residual plot shows some pattern of increasing variance from left
-to right indicating the presence of Heteroskedasticity. This is also
-confirmed in the result of the Breusch-Pagan test, resulting in a
-p-value of 0.017 which is less than 0.05 showing that there is the
-presence of Heteroskedasticity.</p>
+<p><em>The residual plot shows some pattern of uneven variance which
+appears to have been increasing from left to right indicating the
+presence of Heteroskedasticity. As the predicted salaries increase (get
+larger), the errors also tend to increase (grow larger) as
+well.</em></p>
+<p><em>This is also confirmed in the result of the Breusch-Pagan test
+which is significant at a p-value of 0.017 showing that there is the
+presence of Heteroskedasticity. This condition of heteroskedasticity
+makes WLS a more efficient estimator than the OLS in this case</em></p>
 </div>
 <div id="weighted-least-squares-wls-model" class="section level2">
 <h2>2. Weighted Least Squares (WLS) Model</h2>
@@ -1932,12 +1936,14 @@ statistics are reported differently. For instance the WGLM reported the
 deviance while WLS reported the p-value, F-Statistics, R-Squared,
 etc.</p></li>
 <li><p>At p-value&lt;0.05, <strong>Assists</strong> and
-<strong>HmRun</strong> were not significant in the OLS model, they are
-however significant in WLS and WGLM models.</p></li>
+<strong>HmRun</strong> are not significant in the OLS model, they are
+however significant in WLS and WGLM models. The remaining four (4)
+significant predictors in the OLS model remained significant in the WLS
+and WGLM models.</p></li>
 <li><p>Another thing to note is that the value of R-Squared got reduced
-in the WLS model. However, we cannot compare these two R-Squared as one
-has that of WLS had to do with the weighted variance while OLS does
-not.</p></li>
+in the WLS model from 0.311 to 0.175. However, we cannot compare these
+two R-Squared as that of WLS had to do with the weighted variance while
+WGLM has to do with deviance (2LL).</p></li>
 </ul>
 </div>
 <div id="logistic-regression" class="section level2">
@@ -1953,10 +1959,10 @@ not as 1 and 2.</p>
 set.</p>
 <pre class="r"><code>myopia &lt;- read.table(&quot;../../Dataset/myopia.csv&quot;, header = T, row.names = 1, sep = &quot;,&quot;)
 
-head(myopia)</code></pre>
+myopia[1:10, 1:8]</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["study.year"],"name":[1],"type":["int"],"align":["right"]},{"label":["myopic"],"name":[2],"type":["int"],"align":["right"]},{"label":["age"],"name":[3],"type":["int"],"align":["right"]},{"label":["female"],"name":[4],"type":["int"],"align":["right"]},{"label":["spheq"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["al"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["acd"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["lt"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["vcd"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["sports.hrs"],"name":[10],"type":["int"],"align":["right"]},{"label":["read.hrs"],"name":[11],"type":["int"],"align":["right"]},{"label":["comp.hrs"],"name":[12],"type":["int"],"align":["right"]},{"label":["study.hrs"],"name":[13],"type":["int"],"align":["right"]},{"label":["tv.hrs"],"name":[14],"type":["int"],"align":["right"]},{"label":["diopterhr"],"name":[15],"type":["int"],"align":["right"]},{"label":["mommy"],"name":[16],"type":["int"],"align":["right"]},{"label":["dadmy"],"name":[17],"type":["int"],"align":["right"]}],"data":[{"1":"1992","2":"1","3":"6","4":"1","5":"-0.052","6":"21.89","7":"3.690","8":"3.498","9":"14.70","10":"45","11":"15","12":"0","13":"0","14":"10","15":"34","16":"1","17":"1","_rn_":"1"},{"1":"1995","2":"0","3":"6","4":"1","5":"0.608","6":"22.38","7":"3.702","8":"3.392","9":"15.29","10":"4","11":"0","12":"1","13":"1","14":"7","15":"12","16":"1","17":"1","_rn_":"2"},{"1":"1991","2":"0","3":"6","4":"1","5":"1.179","6":"22.49","7":"3.462","8":"3.514","9":"15.52","10":"14","11":"0","12":"2","13":"0","14":"10","15":"14","16":"0","17":"0","_rn_":"3"},{"1":"1990","2":"1","3":"6","4":"1","5":"0.525","6":"22.20","7":"3.862","8":"3.612","9":"14.73","10":"18","11":"18","12":"0","13":"0","14":"4","15":"37","16":"1","17":"1","_rn_":"4"},{"1":"1995","2":"0","3":"5","4":"0","5":"0.697","6":"23.29","7":"3.676","8":"3.454","9":"16.16","10":"14","11":"0","12":"0","13":"0","14":"4","15":"4","16":"1","17":"0","_rn_":"5"},{"1":"1995","2":"0","3":"6","4":"0","5":"1.744","6":"22.14","7":"3.224","8":"3.556","9":"15.36","10":"10","11":"6","12":"2","13":"1","14":"19","15":"44","16":"0","17":"0","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["study.year"],"name":[1],"type":["int"],"align":["right"]},{"label":["myopic"],"name":[2],"type":["int"],"align":["right"]},{"label":["age"],"name":[3],"type":["int"],"align":["right"]},{"label":["female"],"name":[4],"type":["int"],"align":["right"]},{"label":["spheq"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["al"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["acd"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["lt"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"1992","2":"1","3":"6","4":"1","5":"-0.052","6":"21.89","7":"3.690","8":"3.498","_rn_":"1"},{"1":"1995","2":"0","3":"6","4":"1","5":"0.608","6":"22.38","7":"3.702","8":"3.392","_rn_":"2"},{"1":"1991","2":"0","3":"6","4":"1","5":"1.179","6":"22.49","7":"3.462","8":"3.514","_rn_":"3"},{"1":"1990","2":"1","3":"6","4":"1","5":"0.525","6":"22.20","7":"3.862","8":"3.612","_rn_":"4"},{"1":"1995","2":"0","3":"5","4":"0","5":"0.697","6":"23.29","7":"3.676","8":"3.454","_rn_":"5"},{"1":"1995","2":"0","3":"6","4":"0","5":"1.744","6":"22.14","7":"3.224","8":"3.556","_rn_":"6"},{"1":"1993","2":"0","3":"6","4":"1","5":"0.683","6":"22.33","7":"3.186","8":"3.654","_rn_":"7"},{"1":"1991","2":"0","3":"6","4":"1","5":"1.272","6":"22.39","7":"3.732","8":"3.584","_rn_":"8"},{"1":"1991","2":"0","3":"7","4":"0","5":"1.396","6":"22.62","7":"3.464","8":"3.408","_rn_":"9"},{"1":"1991","2":"0","3":"6","4":"1","5":"0.972","6":"22.74","7":"3.504","8":"3.696","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>3.2 Fit a logistic model to predict whether a child is
@@ -2026,17 +2032,17 @@ display.</p>
 effects of <strong>read.hrs</strong> and <strong>mommy</strong>. Please
 refer to the respective variable <strong>measurement units</strong> in
 your discussion.</p>
-<p>Both effects are significant. For <strong>read.hrs</strong>, we
-estimate that on average, holding everything else constant, for every
-additional hours per week outside of school the child spent reading for
-pleasure, the log odds of being myopic within the first five years of
-follow up increases by 0.799 while the Odds increase by a factor of
-2.22.</p>
-<p>Similarly, for <strong>mommy</strong>, one could say that on average,
-holding everything else constant, if the mother of the child is myopic,
-the log odds of the child being myopic within the first five years of
-follow up increases by 2.937 while the Odds increase by a factor of
-18.87</p>
+<p><em>Both effects are significant.</em></p>
+<p><em>For <strong>read.hrs</strong>, we estimate that on average,
+holding everything else constant, for each additional hours per week
+outside of school the child spent reading for pleasure, the log odds of
+being myopic within the first five years of follow up increases by 0.799
+while the Odds increase by a factor of 2.22.</em></p>
+<p><em>Similarly, for <strong>mommy</strong>, one could say that on
+average, holding everything else constant, if the mother of the child is
+myopic, the log-odds of the child being myopic within the first five
+years of follow up increases by 2.937 while the Odds increase by a
+factor of 18.87</em></p>
 </div>
 <div id="decision-trees" class="section level2">
 <h2>4. Decision Trees</h2>
