@@ -1,0 +1,469 @@
+---
+title: "ITEC 621 Homework 2 - Basic Models and Data Pre-Processing"
+subtitle: "Kogod School of Business"
+author: "Johnson Odejide"
+date: "Enter your completion date here (REQUIRED)"
+output: 
+  word_document:
+     toc: true
+     toc_depth: 2
+---
+
+```{r global_options}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+## Knitting, Table of Contents and Presentation (Read Carefully !!)
+
+Download the **HW2_YourLastName.Rmd** R Markdown file and save it with your own last name. Complete all your work in that template file, **Knit** the corresponding Word, HTML or PDF file. Your knitted document **must display your R commands**. Submit your knitted homework document. No need to submit the .Rmd file, just your knitted file.
+
+**No or Improper knitting, table of contents or inadequate formatting for business can have up to 10 pts. in deductions.** So please pay attention to the presentation of your document, including well-written and readable narratives, clean table of contents, visible R code, clear outputs, etc. Overall, your knitted file must have a **professional appearance**, as you would for top management or an important client. Note that while we may deduct up to 10 points for these issues, we may need to deduct more points if we can't understand what you did.
+
+Please, write all your interpretation narratives **outside of the R code chunks** in the areas marked **Answer"**, with the appropriate formatting and businesslike appearance. I write all my comments in the solution inside of the R code chunk with the **#** tag to suppress (`echo = F`) their display for the homework, which I then turn on (`echo = T`) to knit the solution. I will read your submission as a report to a client or senior management. Anything unacceptable to that audience is unacceptable to me. Write your narratives in the text areas and don't use the **#** tag, unless your text is a heading.
+
+## Specific Instructions
+
+This HW has **5 multi-part questions** related to **basic models** and data **pre-processing**. Each question is worth **20 points**. 
+
+## 1. (20 pts.) Heteroskedasticity and WLS
+
+1.1 Load the **{car}** library, which contains the **Salaries** data set (upper case). Then run `options(scipen = 4)` to minimize the use of scientific notation.
+
+Then fit an OLS linear model to predict **salary** (lower case) with **yrs.since.phd** and **sex** as predictors. You will recall that we evaluated this model in Exercise 2. Store the resulting linear model in an object named **fit.ols**. Then display a `summary()` of **fit.ols**. 
+
+```{r car}
+library(car)
+
+options(scipen = 4)
+
+fit.ols <- lm(salary ~ yrs.since.phd + sex, data = Salaries)
+summary(fit.ols)
+```
+
+As most of you answered correctly in Exercise 2, the coefficient for sexMale has a p-value = 0.0915, which is not significant at the p < 0.05 level. It is marginally significant at the p < 0.10 providing some evidence of a gender salary gap, but this evidence is weak. 
+
+1.2 Now inspect the model for **heteroskedasticity**, first visually and then quantitatively. First, display a residual plot for **fit.ols** using `which = 1`. Then load the **{lmtest}** library and run a **Breusch-Pagan** `bptest()` for heteroskedasticity of the **fit.ols** model above.
+
+```{r}
+plot(fit.ols, which = 1)
+
+library(lmtest)
+bptest(fit.ols, data = Salaries)
+```
+
+1.3 Is there a problem with Heteroskedasticity? Why or why not? In your answer, please refer to **both**, the **residual plot** and the **BP test.** 
+    
+```{r}
+# The first residual plot clearly shows that the error variance is not even, suggesting that heteroskedasticity may be present. The BP test is also significant, providing evidence of the presence of heteroskedasticity.
+```
+
+1.4 Given that the residuals of the OLS model are heteroskedastic, fit a Weighted Least Squares **WLS** model. Store this new model in an object named **fit.wls**. Then display the `summary()` results of your WLS model. Let's do this in parts:
+
+(1) First, after you fit **fit.ols** (above), create a vector named **abs.res** with the absolute value of the residual of that model, i.e., `abs(residuals(fit.ols))`; 
+
+```{r}
+abs.res <- abs(residuals(fit.ols))
+```
+
+(2) Then create a vector named **fitted.ols** with the predicted (i.e., fitted) values of the **fit.ols** model, i.e. `fitted(fit.ols)`; 
+
+```{r}
+fitted.ols <- fitted(fit.ols)
+```
+
+(3) Then, fit a linear model to predict **abs.res** with **fitted.ols** as the predictor. Because these are two objects are vectors already constructed and available in your work environment memory, you don't need the `data =` parameter. Store the results of this model in **lm.abs.res**. 
+
+```{r}
+lm.abs.res <- lm(abs.res ~ fitted.ols)
+summary(lm.abs.res)
+```
+
+(4) Then `plot()` **fitted.ols** (horizontal axis) against **abs.res** (vertical axis) and layer the **lm.abs.res** regression line on top, colored in red.
+
+```{r}
+plot(fitted.ols, abs.res)
+abline(lm.abs.res, col = 'red')
+```
+
+(5) Then, take the **square** value of the predicted (i.e., `fitted()`) values of this **lm.abs.res** model and take the inverse (i.e., 1 divided by) of the result and store it the weight vector **wts**. Display the first 10 values of the **wts** vector to double-check your results.
+
+```{r}
+wts <- 1 / fitted(lm.abs.res)^2
+wts[1:10]
+```
+
+Then fit a **WLS** model (with the same specification as the OLS model above), using the **wts** weight vector as the `weight = ` parameter, and save the model in an object named **fit.wls**. Then display the `summary()` of **fit.wls**
+
+```{r}
+fit.wls <- lm(salary ~ yrs.since.phd + sex, data = Salaries,
+              weights = wts)
+summary(fit.wls)
+```
+
+**1.5 Interpretation:** Please provide a brief interpretation of what changed from OLS to WLS. More specifically: (1) did the R-squared change? (2) Which model is better, OLS or WLS and why? And (3) Does the WLS model support the gender pay gap hypothesis and why?
+
+**Answer:**
+
+_The coefficient for sexMale is now significant at p<0.05 and its effect remains positive. On average, holding everything else constant, Males received a salary of $7,952 more than Females._
+
+**(1)** _The R-squared changed from 0.1817 in the OLS to 0.3717 in the WLS_
+
+**(2)** _The WLS is better because the non-significant predictor (sexMale) in the OLS model became significant in WLS_
+
+**(3)** _Yes, the sexMale coefficient is positive and significant. Therefore, based on this data set, on average, holding everything else constant, male faculty received a salary of $7,952 more than female faculty._ 
+
+
+## 2. (20 pts.) Logistic Regression
+
+Dataset: **IBMAttrition.csv** is a Kaggle fictional data set created by IBM
+
+- Attrition (Yes or No): whether the employee left IBM or not
+- JobLevel: 1 to 5 (Integer)
+- Age (in years)
+- BusinessTravel (Factor): "Non-Travel", "Travel_Frequently" or "Travel_Rarely"
+- DistanceFromHome (Discrete): Communing miles from home
+- JobSatisfaction (Ordinal): 1 (Low); 2 (Medium); 3 (High); 4 (Very-High)
+- Gender (Male or Female)
+- Marital Status (Factor): "Divorced", "Married", "Single"
+- Overtime (Yes or No): whether the employee works overtime or not
+
+**2.1 Data Work**
+
+In prior examples have used `read.table( )` to read .csv data file. An alternative way to do this is to use `read.csv()`, but you need to be aware of the default parameters of each function. Let's try the `read.csv()` function this time to read the **IBMAttrition.csv** data set and store it in an object named **attr**. As opposed to `read.table()` the defaults on `read.csv()` are `header = T, sep = ","`, so there is no need to enter these parameters. But you need to enter the parameters `row.names =  1, stringsAsFactors = T`. The last parameter is particularly important in R version 4.xx to ensure that the text data is read into factor variables. 
+
+After you read the data, get a `summary()` of the data object **attr** to inspect its data types. The summary() output is very large because it summarizes all variables in the data set. So, let's add and index to **attr** to limit the number of variable to display in the summary (i.e., `attr[c("Attrition", "JobLevel", "Age", "Gender", "MaritalStatus", "OverTime")]`.
+
+```{r}
+attr <- read.csv("../../../Dataset/IBMAttrition.csv", row.names = 1, stringsAsFactors = T)
+
+summary(attr[c("Attrition", "JobLevel", "Age", "Gender", "MaritalStatus", "OverTime")])
+```
+
+In the `summary()` above, categorical variables are summarized by categories and quantitative variables by quartiles. Notice in the output that the **JobLevel** variable is an integer. If we model this predictor as is, an integer, its coefficient will represent how much attrition changes when the job level increases by 1 level, which is not very useful or meaningful. We can get more nuanced explanations of level effects if we convert this variable to categorical. Let's create a categorical variable in the **attr** data frame named **attr$JobLevelCat**. We can do this by converting **attr$JobLevel** into a **factor** variable using the `as.factor()` and saving the result as a new column in the data frame **attr$JobLevelCat**. List the `class()` of both variables, `attr$JobLevel` and `attr$JobLevelCat` to verify that the former is an integer and the second one a factor.
+
+```{r}
+attr$JobLevelCat <- as.factor(attr$JobLevel)
+
+class(attr$JobLevel)
+class(attr$JobLevelCat)
+```
+
+**2.2 Logistic Regression Model**
+
+Fit a logistic regression model to predict **Attrition** (upper case A) using **JobLevelCat**, **Age**, **Gender**, **MaritalStatus** and **OverTime** as predictors. Store the glm() regression results in an object named **attr.fit**. Remember to use the attribute `family = binomial(link = "logit")`. Then display the `summary()` results. 
+
+```{r}
+attr.fit <- glm(Attrition ~ JobLevelCat + Age + Gender + MaritalStatus + OverTime,
+                family = binomial(link = "logit"),
+                data = attr)
+summary(attr.fit)
+```
+
+**2.3 Model Evaluation**
+
+Is this a good model to predict attrition of IBM employees? Use the deviance statistics of the model to answer this question. In particular, comment on whether the predictors included in this model help reduce deviance, relative to the null model.
+
+**Answer:**
+
+_The predictors in this model helped to reduce the deviance. Relative to the null model, the deviance reduced from 1298.6 to 1089.2 which makes it a better model to predict attrition of IBM employees._
+
+**2.4 Log Odds and Odds**
+
+Then use the `coef(), exp() and cbind()` functions to list the coefficients as **log-odds** and **odds** side by side. **Tip:** use `coef()` to read the **attr.fit** coefficients into a vector named **log.odds**. These should be identical to the coefficients listed above. Then use the `exp()` function to convert the **log.odds** vector into an odds vector named **odds**. Then list both of these vectors side by side using the `cbind()` function.
+
+```{r}
+log.odds <- coef(attr.fit)
+odds <- exp(log.odds)
+cbind("Log-Odds" = log.odds,
+      "Odds" = odds)
+```
+
+**2.5 Interpretation**
+
+Provide an interpretation of the **significance** and both, the **log-odds** and **odds** effects of **Age** and **OverTime** on **Attrition**.
+
+**Answer:**
+
+_Both effects are significant. On average, holding everything else constant, as the employee grow older by 1 year, the log-odds that the employee would leave IBM or not reduces by 0.027 and the odds increase by a factor of 0.97_
+
+_On average, holding everything else constant, if the employee does overtime, the log-odds that the employee would leave IBM or not increases by 1.506 and the odds increase by a factor of 4.507_
+
+## 3. (20 pts.) Transformations: Categorical Data
+
+**3.1 Factor (i.e., Categorical) Variable Levels**
+
+In the results above, **MaritalStatus** is a categorical variable. As you know, when you use a categorical variable as predictors, R transforms them into one binary variable for each category, but R drops one of them from the model, which becomes the **reference level**. To better understand this, use the `levels()` function to display the levels of **attr$MaritalStatus**, and double check that the category dropped from the model is the first one alphabetically. 
+
+
+
+**3.2 Effect of Marital Status**
+
+Based on the levels for **MaritalStatus** (i.e., Divorced, Married or Single), briefly interpret the **significance**, the **log-odds**, and the **odds** effects for **Married** and **Single** employees.
+
+**Answer:**
+
+_The effect of the employee being single is significant but the effect of the employee being Married is not significant when compared with an employee that is Divorced._
+
+_On average, holding everything else constant, the log-odds that the employee would leave IBM if Single compared to being Divorced increases by 1.16 and the odds increase by a factor of 3.19._
+
+_On average, holding everything else constant, the log-odds that the employee would leave IBM if Married relative to being Divorced increases by 0.32 and the odds increase by 1.38 but this effect is not significant._ 
+
+**3.3 Re-Valuing (i.e., Re-Shaping)**
+
+**Re-Shaping JobLevelCat**. We will **re-value** the job level categories. This is different than re-leveling. Re-valuing is simply changing the value labels of the categories.
+
+**JobLevelCat** is a factor variable with 5 levels, from 1 to 5. But when we read a regression output, a variable like JobLevel3 may not mean much to a manager. Let's change these values to something more meaningful (this will not change the results, only the category labels). 
+
+Load the **{plyr}** library and use the `revalue()` function to change the values from `"1"` to `"Entry"`, `"2"` to `"Middle"`, `"3"` to `"Senior"`, `"4"` to `"Top"` and `"5"` to `"Executive"`. 
+
+**Tip:** Assign the results to a new variable named `attr$JobLevelPos` (i.e., Job Level Position) using this function:
+
+revalue(attr$JobLevelCat, 
+        c("1" = "Entry", "2" = "Middle", "3" = "Senior", 
+          "4" = "Top", "5" = "Executive")
+
+Then, use the `levels()` function to display that the factors in this new variable were re-valued properly.
+
+```{r}
+library(plyr)
+
+attr$JobLevelPos <- revalue(attr$JobLevelCat,
+        c("1" = "Entry", "2" = "Middle", "3" = "Senior", 
+          "4" = "Top", "5" = "Executive"))
+
+levels(attr$JobLevelPos)
+```
+
+**3.4 Re-Leveling**
+
+In the section above we simply changed the values of the JobLevelCat categories. This will cause the first value alphabetically **"Entry"** to be the reference level. Since this is a good reference level, we will leave it as is.
+
+On the other hand, the levels for **MaritalStatus** are not so useful for comparisons. In the model above, **Divorced** is the first **MaritalStatus** category, alphabetically, but it may be more useful to use **Single** as a reference level. Let's `relevel()` this predictor to make **Single** the reference level. Save the re-leveled attribute in a new column in the data frame `attr$MaritalStatusRlv` (Tip: use the parameter `ref = "Single"`). Then display it's `levels()` to ensure that **Single** is the first level.
+
+```{r}
+attr$MaritalStatusRlv <- relevel(attr$MaritalStatus, ref = "Single")
+levels(attr$MaritalStatusRlv)
+```
+
+**3.5 Re-Fit the Logistic Model**
+
+Now that you have re-shaped and re-leveled the data, re-fit the GLM Logistic model using the new variables **JobLevelPos** and **MaritalStatusRlv** instead of the old ones. Save the results in an object named **attr.fit.rlv**.
+
+```{r}
+attr.fit.rlv <- glm(Attrition ~ JobLevelPos + Age + Gender +
+                      MaritalStatusRlv + OverTime,
+                    family = binomial(link = "logit"),
+                    data = attr)
+summary(attr.fit.rlv)
+```
+
+**3.6 Interpretation: Job Level Position Effects**
+
+Please interpret the effects of the various Job Level Positions, based on this new results. For simplicity, just interpret the significance and **log-odds** effects. No need to interpret the odds effects.
+
+**Answer:**
+
+
+
+**3.7 Interpretation: Marital Status Effect**
+
+Inspect the log-odds coefficients (no need to discuss odds effects) in the two models (**attr.fit** and **attr.fit.rlv**) and discuss briefly how the effects of **marital status** have changed in the re-leveled model. Please don't just read off the coefficients, but provide a discussion of what changed and why?
+
+**Answer:**
+
+_The reference level of the marital status is now changed from Divorced to Single in **attr.fit.rlv**. This has made the effect of both Divorced and Married to be significant because it now compares them to being Single._
+
+
+**3.8 General Recommendation to IBM**
+
+As a business analyst, it is your job to extract meaning from your data and provide an interesting story to your client, supported by your analysis. As is typical, tons of programming scripts, outputs, etc., need to be distilled for management consumption. For this question, simply focus on all the effects observed in the re-leveled model in 3.5 and provide a brief story (6 to 8 lines) that summarizes your interpretations for IBM managers. Provide this interpretation in an English-like narrative for a management audience. 
+
+**Answer:**
+
+__
+
+
+## 4. (20 pts.) Transformations: Log-Log Model and Standardization
+
+4.1 Using either the `read.table()` or `read.csv` function, read the **Credit.csv** data set into a data frame named **credit**. If you use `read.table()`, ensure that you use `header = T, sep = ",", row.names = 1`. If you use `read.csv()` the only parameter you need is `row.names = 1` . We want to use this data to predict credit **Rating**. 
+
+Then display a **histogram** and a **QQ-Plot** for the **Rating** variable. It should be pretty obvious from the histogram that this variable is somewhat skewed to the right.
+
+```{r}
+credit <- read.csv("../../../Dataset/Credit.csv", row.names = 1)
+
+hist(credit$Rating)
+
+qqnorm(credit$Rating, ylab = "Rating")
+qqline(credit$Rating)
+```
+
+4.2 Given that the response variable is not fully normal, let's start by exploring the normality of the residuals of an OLS model. Fit a **linear** model called **lm.linear** to predict **Rating**, using **Income** (Dollars), **Age**, **Gender** and **Married** as predictors. Display a `summary()` of the results. Then display a histogram of the residuals (tip: stored in `lm.linear$residuals`). Then `plot()` the resulting **lm.linear** model's residual plot, using the `which = 2` parameter.
+
+```{r}
+lm.linear <- lm(Rating ~ Income + Age + Gender + Married,
+                data = credit)
+
+summary(lm.linear)
+
+plot(lm.linear$residuals, which = 2)
+
+```
+
+4.3 The residuals look normally distributed in the center of the QQ-Plot and wagging some at the tails. Let's fit a couple of log models to see if we can improve upon the linear model. Please fit both, a **linear-log** model (logging only the predictor variable **Income**; don't log any other variables) and a **log-log** or **elasticity** model , using the same variables as the **linear** model, but logging both the response variable **Rating** and the predictor **Income** (don't log any other variables). Store the results of the first model in an object named **lm.log.linear** and the second one in an object named **lm.log.log**. Display the `summary()` for both models.
+
+```{r}
+lm.log.linear <- lm(Rating ~ log(Income) + Age + Gender +
+                      Married,
+                    data = credit)
+
+lm.log.log <- lm(log(Rating) ~ log(Income) + Age + Gender +
+                   Married,
+                 data = credit)
+
+summary(lm.log.linear)
+summary(lm.log.log)
+```
+
+**4.4 Interpretation:** Income is significant in all three models, so no need to discuss significance. But please provide an interpretation of the effect of Income (recorded in thousands of $) on Rating for each of the **three models** fitted above.
+
+**Answer:**
+
+**Linear Model - Interpretation**
+
+_On average, holding everything else constant, for each additional $1,000 income, the rating is estimated to increase by 3.5_
+
+**Linear-Log Model - Interpretation**
+
+_On average, holding everything else constant, A 1 percent increase in income results in (162.54/100), that is, 1.63 increase in rating_
+
+**Log-Log Model - Interpretation**
+
+_On average, holding everything else constant, a 1% increase in income results in 0.44% increase in rating_
+
+**4.5 Interpretation:** Using the **Adjusted R-Square** as a guide, which of the three models is the best (please note that you **cannot** compare the 3 models with ANOVA because they are **not** nested)
+
+**Answer:**
+
+_Based on the Adjusted R-Square, the best model is the linear model, followed by the linear-log model. The linear model had the highest Adjusted R-Square value of 0.6242, the linear-log model had an Adjusted R-Square value of 0.5204 while the log-log model had 0.4376 Adjusted R-Square value._
+
+4.6 Then, using the **lm.beta()** function in the **{lm.beta}** library, extract and the standardized regression coefficients for the **lm.linear** model and store them in an object named **lm.linear.std**. Then display its `summary()`.
+
+```{r}
+lm.linear.std <- lm.beta(lm.linear)
+summary(lm.linear.std)
+```
+
+**4.8 Interpretation:** Briefly interpret the **standardized** effect of **Income** on Rating. Also, briefly answer: is it useful to report or analyze the standardized effect of binary variables like **Gender** or **Married**? Or, is it better to report and discuss the raw unstandardized effect? Why or why not?  
+
+**Answer:**
+
+
+
+## 5. (20 pts.) Transformations: Lagged Variables and Serial Correlation
+
+For this question, you need to use the **economics** data set contained in the **{ggplot2}** library. Please note that there is a **small issue** in this data set (it has a data frame inside one of the columns), which causes the `slide()` function to give an error. You need to do a simple quick fix to this data set, which is to re-create the data set. I have done this for you below. I also applied the `options()` function to minimize the display of scientific notation. I have done this for you already in the script. 
+
+```{r}
+# Done for you
+
+library(ggplot2)
+
+economics <- as.data.frame(economics) # To fix the data set glitch
+options(scipen = 4)
+```
+
+Now, go to the R Console (not in the script) and explore the variables in the `?economics` data set, so that you can interpret results correctly. You will be developing a model to predict **unemployment**.
+
+5.1 Fit a linear model to predict umemployment (**unemploy**, in thousands) as a function of the month of data collection (**date**), personal consumption expenditures (**pce** in billions of dollars), and median duration of unemployment (**uempmed** in weeks). Name this model **fit.linear**. Display the `summary()` result for the resulting linear model. 
+
+```{r}
+fit.linear <- lm(unemploy ~ date + pce + uempmed, 
+                 data = economics)
+
+summary(fit.linear)
+```
+
+5.2 It would appear from the high R-squared that this linear model is good. However, since this is monthly data, it is likely that unemployment in one period may affect unemployment in subsequent periods, so we need to inspect for serial correlation.
+
+Display a scatter plot with `economics$date` (month of the observation) in the horizontal axis and the **residuals** of **fit.linear** (i.e., `fit.linear$residuals`) in the vertical axis. Include the attributes `ylab ="` and  `xlab = ` to label the vertical and horizontal axes. Also, to help the visual interpretation, also draw a horizontal red line with `abline(0, 0, col="red")`.
+
+```{r} 
+plot(economics$date, fit.linear$residuals,
+     xlab = "Month",
+     ylab = "Residuals")
+abline(0, 0, col = 'red')
+```
+
+**Comment:** Briefly comment if you suspect serial correlation and why (1 or 2 lines), based on what you see on this plot.
+
+**Answer:**
+
+_Yes, I suspect a positive serial correlation which is indicated by the pattern over time in the residual plot_
+
+5.3 Now load the **{lmtest}** library and run a Durbin-Wastson test `dwtest()` to confirm or not that the model suffers from serial correlation.
+
+```{r}
+library(lmtest)
+
+dwtest(fit.linear)
+```
+
+**Comment:** Briefly comment if the DW test confirms or not the presence of serial correlation, whether it is positive or negative and why or why not.
+
+**Answer:**
+
+_The Durbin-Watson (DW) test confirms the presence of a **positive** serial correlation. The result of the DW test is **significant** at p<0.01 and positive at DW=0.18_
+
+
+5.4 Let's go ahead and correct for serial correlation. My intuition tells me that unemployment in the previous month is a strong predictor of the unemployment this month. Also, I suspect that the unemployment on the same month a year ago may also influence unemployment this month.
+
+So, let's go ahead and load the **{DataCombine}** library and use the `slide()` function to create 2 lagged variables called **unemploy.L1** (lagged 1 month) and **unemploy.L12** (lagged 12 months).
+
+Also, display all columns of the first **15 rows** for the **date** and all three **unemploy** variables and observe how the lag columns were created. Tip, use `economics[1:15, c("date", "unemploy", "unemploy.L1", "unemploy.L12")]`
+
+```{r}
+library(DataCombine)
+
+economics <- slide(economics,
+                    Var = "unemploy",
+                    NewVar = "unemploy.L1",
+                    slideBy = -1)
+
+economics <- slide(economics,
+                    Var = "unemploy",
+                    NewVar = "unemploy.L12",
+                    slideBy = -12)
+
+economics[1:15, c("date", "unemploy", "unemploy.L1", "unemploy.L12")]
+```
+
+5.5 Since we don't know whether the unemployment last month, the same month last year or both are influencing the unemployment outcome this year, let's fit 2 lagged models like the linear model above, by adding the predictor **unemploy.L1** in the first model, and both **unemploy.L1** and **unemploy.L12** in the second model. Store the results of the first model in an object named **fit.lag.1** and the other named **fit.lag.12**. Then test both models for serial correlation with a **Durbin-Watson** test.
+
+```{r}
+fit.lag.1 <- lm(unemploy ~ unemploy.L1 + date + pce + uempmed,
+                data = economics)
+
+fit.lag.12 <- lm(unemploy ~ unemploy.L1 + unemploy.L12 + date + pce + uempmed,
+                 data = economics)
+
+dwtest(fit.lag.1)
+dwtest(fit.lag.12)
+```
+
+**Question:** Was serial correlation corrected with any of the two lagged models? Why or why not?
+
+**Answer:**
+
+_The serial correlation was corrected in both models. The result of the Durbin-Watson test for the model lagged one month was 1.862 which is between the threshold for lack of serial correlation while that of the second lagged model was 2.07._ 
+
+5.6 Run a `summary()` of the **fit.lag.12** model and briefly discuss the difference in significance of the predictors and R squared values between the **fit.linear** and **fit.lag.12** models. 
+
+```{r}
+summary(fit.lag.12)
+```
+
+Then provide a well-articulated interpretation of the coefficients of the 2 lagged variables in **fit.lag.12**.
+
+**Answer:**
+
