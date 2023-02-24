@@ -306,14 +306,16 @@ lm.linear <- lm(Rating ~ Income + Age + Gender + Married,
 
 summary(lm.linear)
 
-plot(lm.linear$residuals, which = 2)
+hist(lm.linear$residuals)
+
+plot(lm.linear, which = 2)
 
 ```
 
-4.3 The residuals look normally distributed in the center of the QQ-Plot and wagging some at the tails. Let's fit a couple of log models to see if we can improve upon the linear model. Please fit both, a **linear-log** model (logging only the predictor variable **Income**; don't log any other variables) and a **log-log** or **elasticity** model , using the same variables as the **linear** model, but logging both the response variable **Rating** and the predictor **Income** (don't log any other variables). Store the results of the first model in an object named **lm.log.linear** and the second one in an object named **lm.log.log**. Display the `summary()` for both models.
+4.3 The residuals look normally distributed in the center of the QQ-Plot and wagging some at the tails. Let's fit a couple of log models to see if we can improve upon the linear model. Please fit both, a **linear-log** model (logging only the predictor variable **Income**; don't log any other variables) and a **log-log** or **elasticity** model , using the same variables as the **linear** model, but logging both the response variable **Rating** and the predictor **Income** (don't log any other variables). Store the results of the first model in an object named **lm.linear.log** and the second one in an object named **lm.log.log**. Display the `summary()` for both models.
 
 ```{r}
-lm.log.linear <- lm(Rating ~ log(Income) + Age + Gender +
+lm.linear.log <- lm(Rating ~ log(Income) + Age + Gender +
                       Married,
                     data = credit)
 
@@ -321,7 +323,7 @@ lm.log.log <- lm(log(Rating) ~ log(Income) + Age + Gender +
                    Married,
                  data = credit)
 
-summary(lm.log.linear)
+summary(lm.linear.log)
 summary(lm.log.log)
 ```
 
@@ -358,7 +360,7 @@ summary(lm.linear.std)
 
 **Answer:**
 
-
+_On average, holding everything else constant, _
 
 ## 5. (20 pts.) Transformations: Lagged Variables and Serial Correlation
 
