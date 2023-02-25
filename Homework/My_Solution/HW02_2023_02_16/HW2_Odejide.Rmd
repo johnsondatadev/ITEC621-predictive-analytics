@@ -1,12 +1,16 @@
 ---
 title: "ITEC 621 Homework 2 - Basic Models and Data Pre-Processing"
-subtitle: "Kogod School of Business"
 author: "Johnson Odejide"
-date: "Enter your completion date here (REQUIRED)"
-output: 
+date: "February 23, 2023"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
   word_document:
-     toc: true
-     toc_depth: 2
+    toc: yes
+    toc_depth: 2
+subtitle: Kogod School of Business
 ---
 
 ```{r global_options}
@@ -104,8 +108,6 @@ summary(fit.wls)
 
 **Answer:**
 
-_The coefficient for sexMale is now significant at p<0.05 and its effect remains positive. On average, holding everything else constant, Males received a salary of $7,952 more than Females._
-
 **(1)** _The R-squared changed from 0.1817 in the OLS to 0.3717 in the WLS_
 
 **(2)** _The WLS is better because the non-significant predictor (sexMale) in the OLS model became significant in WLS_
@@ -139,7 +141,7 @@ attr <- read.csv("../../../Dataset/IBMAttrition.csv", row.names = 1, stringsAsFa
 summary(attr[c("Attrition", "JobLevel", "Age", "Gender", "MaritalStatus", "OverTime")])
 ```
 
-In the `summary()` above, categorical variables are summarized by categories and quantitative variables by quartiles. Notice in the output that the **JobLevel** variable is an integer. If we model this predictor as is, an integer, its coefficient will represent how much attrition changes when the job level increases by 1 level, which is not very useful or meaningful. We can get more nuanced explanations of level effects if we convert this variable to categorical. Let's create a categorical variable in the **attr** data frame named **attr$JobLevelCat**. We can do this by converting **attr$JobLevel** into a **factor** variable using the `as.factor()` and saving the result as a new column in the data frame **attr$JobLevelCat**. List the `class()` of both variables, `attr$JobLevel` and `attr$JobLevelCat` to verify that the former is an integer and the second one a factor.
+In the `summary()` above, categorical variables are summarized by categories and quantitative variables by quartiles. Notice in the output that the **JobLevel** variable is an integer. If we model this predictor as is, an integer, its coefficient will represent how much attrition changes when the job level increases by 1 level, which is not very useful or meaningful. We can get more nuanced explanations of level effects if we convert this variable to categorical. Let's create a categorical variable in the **attr** data frame named **attr\$JobLevelCat**. We can do this by converting **attr\$JobLevel** into a **factor** variable using the `as.factor()` and saving the result as a new column in the data frame **attr\$JobLevelCat**. List the `class()` of both variables, `attr$JobLevel` and `attr$JobLevelCat` to verify that the former is an integer and the second one a factor.
 
 ```{r}
 attr$JobLevelCat <- as.factor(attr$JobLevel)
@@ -184,7 +186,7 @@ Provide an interpretation of the **significance** and both, the **log-odds** and
 
 **Answer:**
 
-_Both effects are significant. On average, holding everything else constant, as the employee grow older by 1 year, the log-odds that the employee would leave IBM or not reduces by 0.027 and the odds increase by a factor of 0.97_
+_Both effects are significant. On average, holding everything else constant, as an employee grow older in age by 1 year, the log-odds that the employee would leave IBM or not reduces by 0.027 and the odds increase by a factor of 0.97_
 
 _On average, holding everything else constant, if the employee does overtime, the log-odds that the employee would leave IBM or not increases by 1.506 and the odds increase by a factor of 4.507_
 
@@ -206,7 +208,7 @@ _The effect of the employee being single is significant but the effect of the em
 
 _On average, holding everything else constant, the log-odds that the employee would leave IBM if Single compared to being Divorced increases by 1.16 and the odds increase by a factor of 3.19._
 
-_On average, holding everything else constant, the log-odds that the employee would leave IBM if Married relative to being Divorced increases by 0.32 and the odds increase by 1.38 but this effect is not significant._ 
+_On average, holding everything else constant, the log-odds that the employee would leave IBM if Married relative to being Divorced increases by 0.32 and the odds increase by a factor of 1.38 but this effect is not significant._ 
 
 **3.3 Re-Valuing (i.e., Re-Shaping)**
 
@@ -263,6 +265,7 @@ Please interpret the effects of the various Job Level Positions, based on this n
 
 **Answer:**
 
+_The effect of all the Job Level Positions (Middle, Senior, Top, Executive) are significant and the coefficients are negative when compared to Entry-Level job positions (which is the reference level). On average, holding everything else constant, the log odds of an employee leaving IBM if they have the Middle, Senior, Top, or Executive level positions compared to the Entry-level positions reduced by 1.10, 0.51, 1.64, and 1.05 respectively._
 
 
 **3.7 Interpretation: Marital Status Effect**
@@ -271,7 +274,7 @@ Inspect the log-odds coefficients (no need to discuss odds effects) in the two m
 
 **Answer:**
 
-_The reference level of the marital status is now changed from Divorced to Single in **attr.fit.rlv**. This has made the effect of both Divorced and Married to be significant because it now compares them to being Single._
+_The reference level of the marital status is now changed from Divorced to Single in **attr.fit.rlv**. This made the effect of both Divorced and Married to be significant because they are now being compared to being Single. However, the coefficients of both Divorced and Married are now negative. Indicating that, on average, holding everything else constant, the log odds of a Married or Divorced Employee leaving IBM reduces by 0.84 and 1.16 respectively when compared to an Employee that is still Single._
 
 
 **3.8 General Recommendation to IBM**
@@ -280,7 +283,9 @@ As a business analyst, it is your job to extract meaning from your data and prov
 
 **Answer:**
 
-__
+_Based on the evidence we have from the data, we gathered that the factors that determine whether IBM Employees would leave or not are; Marital Status, whether the Employee does Overtime or not, the Job level of the Employee, and the age of the Employee._ 
+_As an Employee tends to grow older in age, they tend to be less likely to leave IBM. Also, Employees who are married or divorced are less likely to leave IBM compared to Employees that are Single._
+_Similarly, Employees who have entry level positions in IBM are more likely to leave than those who have other higher positions, that is, Middle, Senior, Top, and Executive positions. Additionally, if an Employee does Overtime, they are also more likely leave IBM than an Employee who does not do overtime. The Employees who do overtime are the most likely to leave IBM according to the analysis carried out._
 
 
 ## 4. (20 pts.) Transformations: Log-Log Model and Standardization
@@ -322,7 +327,6 @@ lm.linear.log <- lm(Rating ~ log(Income) + Age + Gender +
 lm.log.log <- lm(log(Rating) ~ log(Income) + Age + Gender +
                    Married,
                  data = credit)
-
 summary(lm.linear.log)
 summary(lm.log.log)
 ```
@@ -333,25 +337,26 @@ summary(lm.log.log)
 
 **Linear Model - Interpretation**
 
-_On average, holding everything else constant, for each additional $1,000 income, the rating is estimated to increase by 3.5_
+_On average, holding everything else constant, for each additional $1,000 income, the credit rating is estimated to increase by 3502_
 
 **Linear-Log Model - Interpretation**
 
-_On average, holding everything else constant, A 1 percent increase in income results in (162.54/100), that is, 1.63 increase in rating_
+_On average, holding everything else constant, A 1 percent increase in income results in (16250/100), that is, 1625 increase in rating_
 
 **Log-Log Model - Interpretation**
 
-_On average, holding everything else constant, a 1% increase in income results in 0.44% increase in rating_
+_On average, holding everything else constant, a 1% increase in income results in 439% increase in rating_
 
 **4.5 Interpretation:** Using the **Adjusted R-Square** as a guide, which of the three models is the best (please note that you **cannot** compare the 3 models with ANOVA because they are **not** nested)
 
 **Answer:**
 
-_Based on the Adjusted R-Square, the best model is the linear model, followed by the linear-log model. The linear model had the highest Adjusted R-Square value of 0.6242, the linear-log model had an Adjusted R-Square value of 0.5204 while the log-log model had 0.4376 Adjusted R-Square value._
+_Based on the Adjusted R-Square, the best model is the linear model **lm.linear**, followed by the linear-log model. The linear model had the highest Adjusted R-Square value of 0.6242, the linear-log model had an Adjusted R-Square value of 0.5204 while the log-log model had 0.4376 Adjusted R-Square value._
 
 4.6 Then, using the **lm.beta()** function in the **{lm.beta}** library, extract and the standardized regression coefficients for the **lm.linear** model and store them in an object named **lm.linear.std**. Then display its `summary()`.
 
 ```{r}
+library(lm.beta)
 lm.linear.std <- lm.beta(lm.linear)
 summary(lm.linear.std)
 ```
@@ -360,7 +365,10 @@ summary(lm.linear.std)
 
 **Answer:**
 
-_On average, holding everything else constant, _
+_The effect of **Income** is significant at the p < 0.001 level. The standardized coefficients show that on average, holding everything else constant, when the income increases by 1 standard deviation, the credit rating increases by 0.7978_
+
+_It is not useful to report the standardized effect of binary variables like Gender and Married. It is rather better to report and discuss the raw unstandardized effect of these variables because the values are arbitrary, they only represent/denote certain values like 1 for Male and 0 for Female or 1 for Married and 0 otherwise. For instance, with respect to a categorical variable, it doesn't make any sense  to say the income is increased by 1 standard deviation when the gender increases by 1 standard deviation._
+
 
 ## 5. (20 pts.) Transformations: Lagged Variables and Serial Correlation
 
@@ -401,7 +409,7 @@ abline(0, 0, col = 'red')
 
 **Answer:**
 
-_Yes, I suspect a positive serial correlation which is indicated by the pattern over time in the residual plot_
+_Yes, I suspect a positive serial correlation which is indicated by a cyclical pattern over time in the residual plot._
 
 5.3 Now load the **{lmtest}** library and run a Durbin-Wastson test `dwtest()` to confirm or not that the model suffers from serial correlation.
 
@@ -457,7 +465,8 @@ dwtest(fit.lag.12)
 
 **Answer:**
 
-_The serial correlation was corrected in both models. The result of the Durbin-Watson test for the model lagged one month was 1.862 which is between the threshold for lack of serial correlation while that of the second lagged model was 2.07._ 
+_The serial correlation was corrected in the seocond model lagged by 12 months **fit.lag.12** at the level of p-value > 0.05 and a Durbin-Watson value of 2.07 indicating that there is no autocorrelation. On the other hand, the first model lagged by 1 month implies autocorrelation at p-value=0.03 even though the DW is within the threshold of lack of serial correlation._
+
 
 5.6 Run a `summary()` of the **fit.lag.12** model and briefly discuss the difference in significance of the predictors and R squared values between the **fit.linear** and **fit.lag.12** models. 
 
@@ -469,3 +478,6 @@ Then provide a well-articulated interpretation of the coefficients of the 2 lagg
 
 **Answer:**
 
+_The coefficient of lagged variable **unemploy.L1** is positive and significant at the p < 0.001 level. On average, holding everything else constant, when the unemployment in the previous month increases by 1000, the unemployment this month is estimated to go up by 1070._
+
+_The coefficient of lagged variable **unemploy.L12** is negative and significant at the p < 0.001 level. On average, holding everything else constant, when the unemployment on the same month a year ago increases by 1000, the unemployment on the same month this year decreases by 57_
