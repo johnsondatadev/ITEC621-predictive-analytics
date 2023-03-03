@@ -114,7 +114,7 @@ First let's make the predictions using the trained model, but with the test subs
 
 ```{r}
 pred.test <- predict(fit.train, Boston.test)
-pred.test[1:6]
+head(pred.test)
 ```
 
 Then, subtract these predictions from the actual test outcomes `Boston.test$medv`, square the differences and take the mean. Store the results in a vector named **mse.test.rscv**. Then compute the **RSCV Test RMSE** by taking the `sqrt()` of **mse.test.rscv**. 
@@ -122,10 +122,10 @@ Then, subtract these predictions from the actual test outcomes `Boston.test$medv
 Then, use the `cbind()` function to bind the two columns into one data frame, with the respective column labels **"MSE"** and **"RMSE"** and name it **test.error.rscv**. Then display this **test.error.rscv** data frame. 
 
 ```{r}
-mse.test.rscv <- pred.test - Boston.test$medv
-sqrt(mse.test.rscv)
+mse.test.rscv <- mean((Boston.test$medv - pred.test) ^ 2)
+rmse.test.rscv <- sqrt(mse.test.rscv)
 
-test.error.rscv <- cbind("MSE" = mse.test.rscv, "RMSE" = sqrt(mse.test.rscv))
+test.error.rscv <- cbind("MSE" = mse.test.rscv, "RMSE" = rmse.test.rscv)
 test.error.rscv
 ```
 
@@ -140,7 +140,12 @@ The function we feature in 2.2 requires a **glm()** object. If you are fitting a
 Using the full **Boston** data set, fit a **GLM** model to predict **medv** using the same predictors `crim + chas + rm + age + tax + ptratio + lstat`. Again, we don't need to display the `summary()` results because we are just evaluating the predictive accuracy of the model at this point. Store the results in an object named **glm.fit**. Just to verify results, display the model's **2LL** or `glm.fit$deviance`, null deviance or  `glm.fit$null.deviance` and the proportion of deviance reduction of the model `(glm.fit$null.deviance - glm.fit$deviance) / glm.fit$null.deviance`, which is equivalent to the R squared.
 
 ```{r}
+glm.fit <- glm(medv ~ crim + chas + rm + age + tax + ptratio + lstat, data = Boston)
+glm.fit$deviance
 
+glm.fit$null.deviance
+
+(glm.fit$null.deviance - glm.fit$deviance) / glm.fit$null.deviance
 ```
 
 **2.2 Leave One Out (LOOCV)**
@@ -154,7 +159,12 @@ Store this value in an object named **test.mse.loo**. Then compute the correspon
 Then, use the `cbind()` function to create a new data frame with the two columns labeled "MSE" and "RMSE", respectively, and name this data frame **test.error.loocv**. Then display this data frame.
 
 ```{r}
+library(boot)
 
+test.mse.loo <- cv.glm(Boston, glm.fit)$delta[1]
+test.rmse.loo <- sqrt(test.mse.loo)
+test.error.loocv <- cbind("MSE" = test.mse.loo, "RMSE" = test.rmse.loo)
+test.error.loocv
 ```
 
 # 3. K-Fold Validation (KFCV)
@@ -166,7 +176,11 @@ Using the same `cv.glm()` function and **glm.fit** model object, compute and dis
 Then, use the `cbind()` function to create a new data frame with the two columns labeled "MSE" and "RMSE", respectively, and name this data frame **test.error.10fcv**. Then display this data frame.
 
 ```{r}
+test.mse.10f <- cv.glm(Boston, glm.fit, K = 10)$delta[1]
+test.rmse.10f <- sqrt(test.mse.10f)
 
+test.error.10fcv <- cbind("MSE" = test.mse.10f, "RMSE" = test.rmse.10f)
+test.error.10fcv
 ```
 
 **3.2 Compare Results**  
@@ -174,7 +188,9 @@ Then, use the `cbind()` function to create a new data frame with the two columns
 Now, to make it easier to compare errors, let's bind the 4 type of errors computed above. Use the `rbind()` function to row-bind the **train.error**, **test.error.rscv**, **test.error.loocv** and **test.error.10fcv**. Then use the `rownames()` function to name the respective rows "Train", "RSCV Test", "LOOCV Test" and "10FCV Test", using the concatenate function `c()`. Name this new data frame **errors.all** and then display it, but using the `kable()` function to get a nicely formatted table. Use `knitr::kable(errors.all, format = "simple", digits = 2, caption = "CV Result Summary")`.
 
 ```{r}
-
+errors.all <- rbind(train.error, test.error.rscv, test.error.loocv, test.error.10fcv)
+rownames(errors.all) <- c("Train", "RSCV Test", "LOOCV Test", "10FCV Test")
+knitr::kable(errors.all, format = "simple", digits = 2, caption = "CV Result Summary")
 ```
 
 # 4. Commentary
