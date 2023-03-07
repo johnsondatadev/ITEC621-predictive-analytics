@@ -1,0 +1,215 @@
+---
+title: "Summary Prep"
+author: "Johnson ODEJIDE"
+date: "2023-03-06"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, include = F)
+```
+
+## Boxplot and QQ Plot Interpretation
+
+The data is somewhat normal in the middle, but the qqplot deviates from the qqline providing some indication of non-normality at the tails. The histogram shows some skewness to the right indicating some departure from normality, but it has a bell shape in the center of the data, which is consistent with the QQ Plot.
+
+## Basic Descriptive Analytics
+
+All predictors are statistically significant (i.e., they have asterisks next to them and the p-values are smaller than 0.05). Also, all predictors are positive, so they all have a positive influence on credit rating. Limit and Cards are the most significant and the number of Cards seems to have the strongest effect.
+
+
+## Descriptive Analytics - Gender Pay Gap
+
+**Is there a gender pay gap?**
+
+* Explore the data (head, summary)
+
+* Get the description (describe - psych)
+
+* Aggregate salary by sex (aggregate)
+
+**Remark:**
+
+_**Based on the output above, does it appear to be a gender pay gap? Why or why not. In your answer, please refer to as much of the data above to support your answer.**_
+
+The mean salary for males is slightly higher than for females. The boxplot of salary by sex does not appear to support a gender pay gap because the boxes are largely overlapping. However, the ANOVA test is significant supporting the gender pay gap argument. At the same time we can also observe a high correlation between Yrs.Since.Phd and Salary, which is supported by the corresponding scatter plot. Since male faculty have more years since obtaining their PhD degrees than females, this may explain why males make somewhat larger salaires.
+
+_**Do these results support the salary gender gap hypothesis? Briefly explain why.**_
+
+Yes, the sexMale coefficient is positive and significant, so based on this data set, on average, male faculty make about $14K more than female faculty.
+
+## Multivariate OLS Regression
+
+_**Do these results support the salary gender gap hypothesis? Briefly explain why.**_
+
+The evidence is not conclusive. Controlling for years since obtaining a PhD degree, on average, male faculty make about $7,923 more than female faculty, but this effect is only significant at the p=0.0915 level, not at the p < 0.05 level.
+
+
+## Comparing Models with ANOVA F-Test
+
+_**Provide your brief conclusions (in 6 lines or so) about whether you think there is a gender pay gap based on this analysis (you will expand this analysis much further in HW2). First, based on the Anova test above, which lm() model is better and why? Then, compare the best predictive model of the two against the descriptive analytics results you obtained in 1.2 above. If the null hypothesis is that there is no gender pay gap, is this hypothesis supported? Why or why not?**_
+
+* The ANOVA test is significant so the larger model, lm.fit2 is a better model than the smaller model lm.fit.1. # Descriptive analytics (ANOVA) suggested that there is a gender pay gap. But these results are only preliminary. In order to have more substantive statistical support and test the gender pay gap hypothesis properly, we need to analyze predictive models with the appropriate control variables. 
+
+* The lm.fit.1 model supports the gender salary gap hypothesis at a significance level of p < 0.05, with males making more than females. Since this is a simple regression model with just one predictor, it is not surprising that we get the same results as with the ANOVA test. 
+
+* However, the results with the better model lm.fit.2 also show a positive coefficient, with males making more than females, but the coefficient is only marginally significant with p = 0.0915. It looks like the number of years since their PhD degree was earned (i.e., experience) is a stronger predictor, which is what we observed in ggpairs(). 
+
+* Insight: when 2 predictors are correlated and you omit one, it causes the included variable to be biased (it picks up some of the effect of the omitted predictor). It looks like there are many more male professors than female professors with many years of tenure. The ANOVA test is consistent with the regression results. Adding yrs.since.phd improves the explanatory power of the model significantly.
+
+
+## Heteroskedasticity Testing
+
+_**Is there a problem with Heteroskedasticity? Why or why not? In your answer, please refer to both, the residual plot and the BP test.**_
+
+* The first residual plot clearly shows that the error variance is not even and appears to fan out, providing some visual indication that the errors are heteroskedastic. As fitted (i.e., predicted) salaries get larger the errors grow larger. 
+
+* The Breusch-Pagan test is significant at p = 0.017, confirming the presence of heteroskedasticity. WLS is a more efficient estimator (i.e., less variance) than OLS under conditions of heteroskedasticity.
+
+## Weighted Least Squares (WLS) Model
+
+**Technical tip:** Because you are using one data vector to predict another data vector, you don’t need the data = parameter. You only need the data = parameter when your variables are columns in a data frame.
+
+* **To get the appropriate weight**
+fit the OLS, Get the **absolute** values of the residuals, then predict these absolute residuals using the fitted (predicted) values of the OLS using lm. Get the predicted (fitted) values and invert them, that is, `wts = 1/fitted(absolute residuals) ^ 2`
+
+* **To fit the WLS**
+Fit the usual OLS, then add a parameter `weights`, that is, `weights = wts`
+
+## Weighted Generalized Linear Model (WGLM)
+
+Observe the similarities an differences between the OLS, WLS and WGLM model and provide a brief commentary of your observations.
+
+* It is interesting and somewhat unusual that the R-squared went down with the WLS model from 0.311 to 0.175. Most commonly, the R-squared goes up with WLS, but since the R-squared for WLS is not exactly the proportion of explained variance but the of explained weighted variance, we cannot really compare R-squares. 
+
+* However, we know that WLS has less variance than OLS when the OLS residuals are heteroskedastic. It is interesting to note that the 4 significant predictors remained significant in WLS, but the 2 non-significant predictors in OLS (Assists and HmRun) became significant in WLS. 
+
+* The WGLM model yields the exact same results as the WLS model, except that WGLM reports 2LL (deviance) fit statistics, rather than the R-square and F-test.
+
+## Logistic Regression
+
+**Remark**
+Logistic regression is used for binary outcome. GLM is used to fit the model in this case by adding the `family = "binomial"(link = "logit")` 
+
+## Log odds and Odds
+
+For interpretation purposes, display the log-odds alongside the odds. Use the coef() function to extract the log-odds coefficients from myopia.logit and save them in a vector object named log.odds. Then use the exp() function to convert the log-odds into odds and store the results in a vector object named odds.
+
+log.odds <- coef(myopia.logit) _Extract the log-odds_ 
+
+coefficients odds <- exp(log.odds) _Convert the log-odds to odds_
+
+******** Log-Odds Odds
+
+read.hrs 0.799    2.22377
+
+mommy    2.937    18.86550
+
+**Interpretation**
+
+Provide a brief interpretation of both, the log-odds and odds effects of read.hrs and mommy. Please refer to the respective variable measurement units in your discussion.
+
+* Both effects are significant. Holding everything else constant, on average, for each additional hour of reading per week, the log-odds of developing myopia within the first five years of follow up increases by 0.799 and the odds increase by a factor of 2.22. 
+
+* Holding everything else constant, on average, if the child's mother is myopic, the log-odds of the child developing myopia increase by 2.937 and the odds increase by a factor of 18.86.
+
+## Decision Trees
+
+**Regression Tree** is used for plotting a tree for a quantitative outcome variable while **classification Tree** is used for categorical variable.
+
+**Remark**
+
+While it is essential to transform the outcome variable to a factor (categorical) variable before doing classification trees, this process is not so essential with the logistic regression.
+
+Notice that the outcome variable is an integer, not a factor (categorical) variable. **This works fine in a Logistic regression model**, but a factor outcome variable gives you better visual displays in classification trees.
+
+
+## Categorical (Factor) Predictors
+
+**Remark**
+
+**Interpretation**
+
+_Briefly interpret both, the priorityLow coefficient and it’s p-value_
+
+The effect of priorityLow is positive and significant at the p = 0.002 level. On average, holding everything else constant, Low priority MRs take 20.64 days longer to complete "compared to" High priority MRs (which is the reference level).
+
+swd\$priority <- relevel(swd\$priority, ref = "Low")
+
+_**Briefly explain how the 3 priority coefficients changed**_
+
+Since the reference level is now "Low" priority, the 3 priority coefficients are now relative to low priority, so the coefficients are now negative and significant. On average and holding everything else constant, Medium, High and Very High priority modifications are developed 17.4, 20.6 and 30.5 days faster (respectively) than Low priority modifications.
+
+_**Do you think we should log-transform the dev.days variable? Why or why not? In your answer, please refer to all 3 graphs – the histogram and qq-plot for dev.days and the residual plot for lm.fit.**_
+
+The histogram is skewed to the right and both qq-plots show substantial misalignment with their qq-lines, suggesting that neither dev.days nor the residuals are normally distributed. We should try a log-transformation of the outcome variable dev.days
+
+
+* The distribution of the outcome variable def.day now looks fairly normal, although there is a large concentration of data points with very very small development time making the data somewhat bi-modal. These are probably small MRs for quick fixes. 
+
+* The QQ Plot for log(swd$dev.days) confirms this,the the QQ Plot roughly aligned with the QQ Line, except for very low values of dev.days. 
+
+* The residuals of the lm.fit.log look fairly normal, with some departure from normality for very low and very high values of dev.days.
+
+`par(mfrow=c(1, 1))`
+
+**Question**
+
+Which is the best model of the 3, lm.fit (linear), lm.fit.log (log-linear) or lm.fit.loglog (log-log)? In your answer, refer to the p-values of the coefficients and the adjusted R-squares.
+
+**Technical Note:** Since the logged models are NOT nested within the others, you can’t use ANOVA to compare them. Just use the Adjusted R-squared for now (we will use cross-validation for this purpose later on).
+
+* The log-log model has the highest adjusted R-square and therefore, it is the best. The log-linear model is second best and far superior to the linear OLS model. More coefficients are significant and the significance levels are stronger. 
+
+## Standard Regression
+
+There are two ways to run standardized regressions. The first one is to use the **scale()** function to standardize either the entire data set, or just specific variables of interest. However, standardizing individual variables is a tedious process. It is much easier to fit a plain OLS regression and then extract standardized regression coefficients from raw coefficients and display both of them side by side. Since you already have a fitted linear model lm.fit, load the {lm.beta} library and use the lm.beta() function to extract standardized regression results. Store these results in an object named lm.fit.std and then display a summary() for this object.
+
+***********      Estimate Standardized Std. Error t value     Pr(>|t|)
+
+num.modules       3.12954      0.16960    0.55206   5.669 0.0000000179 ***
+
+team.size        12.41606      0.13420    2.66888   4.652 0.0000036399 ***
+
+Please provide a brief interpretation of both, the raw and standardized effects on dev.days”” of each, num.modules** and team.size.
+
+* The effect of num.modules is significant at the p < 0.001 level. The raw coefficient estimate  shows that, on average and holding other predictors constant, when the number of modules associated with a software modification increases by 1, the number of days it takes to complete the software modification increases by 3.12 days. The standardized coefficients show that on average, holding everything constant, when the number of modules in a software modification increases by 1 standard deviation, the number of days it takes to complete the modification increases by 0.1696 standard deviations.
+
+* The raw effect of team.size is also significant at the p < 0.001 level. It shows that, on average and holding other predictors constant, when we add one member to the software development team, the number of days it takes to complete the software modification increases by 12.41 days (surprisingly!!). The standardized coefficients show that, on average and holding everything constant, when the number of members in a team increase by 1 standard deviation, the number of days it takes to complete the modification increases by 0.1342 standard deviations.
+
+* Can you figure out why larger teams take longer to develop software? You would think that more people in a team speed up the development, but these results support the opposite. Well, as it turns out, this supports Fred Brooks' (seminal The Mythical Man-Month book) argument that adding members to a software team brings in more productive resources, but it increases exponentially the coordination challenges, which generally end up increasing the development time. Statistically, you could simply say that keeping priority, number of modifications needed, and number of modules affected, team size does not provide incremental benefits, but on the contrary, it is detrimental to software development speed.
+
+## Multivariate Time Series 
+
+(Durbin-Watson test for serial correlation)
+
+DW = 0.22514, p-value < 2.2e-16
+
+_**Is there serial correlation in the model? Is it positive or negative? Use both, the residual plot and the results of the Durbin-Watson test to briefly explain why or why not.**_
+
+Yes, there is positive serial correlation. The residual plot shows a clear cyclical pattern over time and the DW statistic is 0.2, confirming a strong positive serial correlation. The DW test is also very significant, so we can reject the null hypothesis of no serial correlation.
+
+**Technical Tip:** When you lag one period, you lose the first observation because the first observation does not have a lagged value. Consequently, when you plot the residuals, you need to remove the first observation from the time T vector. You can accomplish this with the [-1] index right next to T shown below, which removes the first observation in the vector.
+
+DW = 2.4197, p-value = 0.9989
+
+_**Please indicate if the serial correlation problem was resolved. Use both, the residual plot and the results of the Durbin-Watson test to briefly explain why or why not.**_
+
+Yes, the serial correlation problem was solved. The residual plot shows a cloud of data without a noticeable pattern and the DW statistic is 2 (rounded), confirming the lack of serial correlation. The DW test not significant, so we retain the null hypothesis of no serial correlation.
+
+*********     Estimate Std. Error t value Pr(>|t|) 
+
+KUnits.L1     0.969634   0.023569  41.141  < 2e-16 ***
+
+QtrQ4       -16.678066   2.273843  -7.335 3.44e-12 ***
+
+**Please interpret the effect of QtrQ4 and KUnits.L1**
+
+* The effect of QtrQ4 is negative and highly significant at the p < 0.001 level. On average, holding everything else constant, there are 16.68 thousand fewer houses started in the fourth quarter, compared to the first quarter (note that this is the binary variable left out alphabetically, and therefore the reference level). This makes sense because the fourth quarter is in late fall and the beginning of winter, which is a low period for construction. 
+
+* The effect of KUnits.L1 is positive and significant at the p < 0.001 level. On average, holding everything else constant, for every thousand houses started in a given period, there are 969 houses started in the following period.
+
