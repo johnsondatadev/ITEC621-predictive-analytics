@@ -1,11 +1,15 @@
 ---
 title: "Exercise 6 - Machine Learning and Cross Validation"
 author: "Johnson ODEJIDE"
-date: "Enter your date here"
-output: 
+date: "Thursday, 9 March 2023"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
   word_document:
-     toc: true
-     toc_depth: 2
+    toc: yes
+    toc_depth: 2
 ---
 
 ```{r global_options, include=FALSE}
@@ -199,7 +203,7 @@ Provide a brief commentary of the results above. Is there a meaning to the diffe
     
 **Answer:**    
     
-
+Although the Cross-Validation tests yielded different MSE results, it does not infer that one test is better than another. There is no valid meaning to the differences between all three CV test MSE result. They are all different ways of testing model using different re-sampling approaches for cross-validation.
 
 **Technical Note** 
 
