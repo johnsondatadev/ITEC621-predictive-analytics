@@ -337,8 +337,6 @@ Hitters.step.forward <- step(Hitters.null,
 
 summary(Hitters.step.forward)
 
-# Now, let's try Stepwise, starting with the Full model and going Backward-Forward
-
 Hitters.step.backward <- step(Hitters.full, 
                               scope = list(lower = Hitters.null, 
                                            upper = Hitters.full), 
