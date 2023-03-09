@@ -1,0 +1,213 @@
+---
+title: "Exercise 5 - Variable Selection"
+author: "Johnson ODEJIDE"
+date: "Wednesday, 8 March 2023"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: 2
+subtitle: Multicollinearity and Variable Selection
+editor_options:
+  chunk_output_type: console
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo = T, include = T, warning=F, message=F)
+```
+
+**Technical Issue:** Note that the YAML header in the template has these new parameters:
+
+`editor_options:`   
+    `chunk_output_type: console`
+
+These parameters will cause your output to display in the R console and the graphs to display in the Plot viewer window, instead of inline after each code chunk. This can be useful if you want to keep your code clean and be able to zoom your graphs in a separate zoom window. But if you prefer R Markdown to display your work **inline** like we did before, you can simply delete these parameters in the YAML header or change it to (the document will knit the same either way):
+
+`editor_options:`   
+    `chunk_output_type: inline`
+
+## Preparation 
+
+Download the **Ex5_VariableSelection_YourLastName.Rmd** R Markdown file to your working directory, rename with your last name and follow the instructions below. When you finish, upload onto Blackboard the .Rmd file or the knitted file as a Word, HTML or PDF file. Knitting and formatting is worth up to **3 points** in this and all exercises.  
+
+**Formatting:** Please ensure that all your text narratives are fully visible (if I can't see the text, I can't grade it). Also, please ensure that your **Table of Contents** is visible and properly formatted. Also, please prepare your R Markdown file with a **professional appearance**, as you would for top management or an important client. Please, write all your interpretation narratives in the text area, outside of the R code chunks, with the appropriate formatting and businesslike appearance. **Note:** I write all my interpretation solutions inside of the R code chunk to suppress their display until I print the solution, but you don't need to do this. I will read your submission as a report to a client or senior management. Anything unacceptable to this audience is unacceptable to me.
+
+**Submission**: Submit your knitted homework document in Canvas. There is no need to submit the .Rmd file, just your knitted file.  
+
+
+## 1. Read the Data
+
+**1.1** Use the **read.table()** function to retrieve columns **3 to 10** from the data set **PizzaCal.csv ** from Canvas and store it in your R working folder for this class. Name your dataset **pizza**.
+
+```{r prep}
+# Done for you, but please ensure your data set has the columns listed below
+pizza <- read.table("PizzaCal.csv", header = T, sep = ",")[, 3:10]
+head(pizza)
+```
+
+This dataset contains nutrition data on a sample of 300 slices of frozen pizza (100 grams each):
+
+- **import**: binary variable, 0 if domestic, 1 if imported
+- **mois**: moisture content (grams per slice)
+- **prot**: amount of protein (grams per slice)
+- **fat**: fat content (grams per slice)
+- **ash**: ash content (grams per slice)
+- **sodium**: amount of sodium (grams per slice)
+- **carb**: amount of carbohydrates (grams per slice)
+- **cal**: number of calories in the slice
+
+## 2. OLS
+
+**2.1** Fit an OLS model to predict **cal** with all other variables as predictors. Store the results in an object named **fit.full**. Display the `summary()` results for this model.
+
+```{r} 
+fit.full <- lm(cal ~ . , data = pizza)
+summary(fit.full)
+```
+
+## 3. Multicollinearity Testing
+
+**3.1** First, load the **{klaR}** library and obtain the **Condition Index (CI)** for this model using the `cond.index()` function. Feed the model **fit.full** into this function, along with the `data = Pizza` parameter. Store the results in an object named **ci**. 
+
+**Technical Note:** 
+
+This object is a vector with ratios of the square root of the eigenvalues of each the correlation matrix against the smallest eigenvalue. 
+
+**Technical note:** As you know, eigenvalues are sorted by size. In the `cond.index()` function, the eigenvalues are ordered from largest to smallest. If eigenvalues are relatively even, there is little linear dependency or multicollinearity among the predictors. If the eigenvalues vary widely, there are substantial linear dependecies or multicollinearity in the data. The `cond.index()` function (like most CI functions) sorts the eigenvalues from smallest to largest. The CI is computed as the square root of the ration of the largest eigenvalue to the smallest. The larger this number, the larger the difference among eigenvalues, the more multicollinear the data. Most CI functions will compute the condition number for each eigenvector, as the square root of its eigen value to the smallest eigenvalue. But the only one that matters is the largest ratio, which is the definition of a CI.
+
+Please display the full **ci** vector so that you can take a look at it, and then extract the **CI** , that is the last value, from the **ci** vector and display it. **Tip:** Since the function `length()` counts the number of elements in a vector, `ci[length(ci)]` will extract the last, that is the largest of these ratios from the **ci** vector, which is the **CI** multicollinearity statistic we are looking for.
+
+```{r} 
+library(klaR)
+ci <- cond.index(fit.full, data = pizza)
+ci
+```
+
+Then load the **{car}** library library to compute the Variance Inflation Factors (**VIF's**). Obtain the VIFs** for the predictors in the model, by feeding **fit.full** into the `vif()` function. 
+
+```{r} 
+library(car)
+vif(fit.full)
+```
+
+**3.2** Interpretation. Are there problems with multicollinearity? Please briefly explain in 1 or 2 lines why or why not. Also, which predictors are the top 2 contributors to multicollinearity in this model and why?  
+  
+**Answer:**
+
+Yes, there are problems with multicollinearity because the CI (4046.58) is higher than  50. Additionally, all the VIFs are above 10 apart from `import` indicating that predictors are linearly related.
+
+The top 2 contributors among the predictors are carb and mois which have VIF of 62,784 and 17,637 respectively.
+
+**3.3** Suggestions. Do you have any suggestions on how to resolve this multicollinearity issue? Provide one sound suggestion    
+  
+**Answer:**  
+
+A possible suggestion would be to explore some other better models through variable selection. Also, we can get more data which sometimes lowers the multicollinearity but the CI in this case is way too high that this may not be the case for this problem.
+
+## 4. Stepwise Variable Selection
+
+Let's select the best set of variables using **stepwise** variable selection to predict calories in the **pizza ** data set.
+
+**4.1** Suppose that your manager has told you that clients always inquire about **fat** and **carbs**, so she wants you to include these two predictors in the model, regardless of significance. So, rather than running a stepwise method between the null and full models, we will run a stepwise selection with a scope from a small model (with only fat and carbs) to the full model with all predictors.
+
+So, first, fit the **small** model and name it **fit.small**, predicting calories (**cal**), with only **fat** and **carb** as predictors, which will be the lower boundary of the stepwise scope. Then display the `summary()` of this model and take a quick look at the results. 
+
+```{r}
+fit.small <- lm(cal ~ fat + carb, data = pizza)
+summary(fit.small)
+```
+
+As you can see, both predictors are significant. Because of the high collinearity among predictors, we suspect that this **fit.small** model is biased, but we also know that the **fit.full** model suffers from severe multicollinearity. We could test **fit.small** for multicollinearity too, but instead, let's go through the **Stepwise** variable selection model and test the multicollinearity of the final resulting model.
+
+The **Stepwise** approach requires a **starting model** as the first parameter. We can start either with fit.small (which has a lot more bias) or fit.full (which has a lot more variance). You may get similar results with either, but it is generally better to start with the least biased model (i.e., fit.large) because the coefficients will be less biased. For this exercise, let's run stepwise starting with **fit.full**. 
+
+That is, let's enter **fit.full** as the first argument in the `step()` function. 
+
+The next parameter is `scope =` which provides the range of models to test. You can provide a list of models to try, if you wish. But in this exercise, you will explore a range of models. So, we need to feed the `lower =` and `upper =` parameters to define the lower and upper boundaries of the range of models to test. Since our starting model is **fit.full**, the upper bound model is `upper = fit.full`. The lower bound model is `lower=fit.small`, which contains the predictors your manager wants to see in the final model. Note that the `step()` function requires that we pass the scope as a list. In sum, your `scope()` function should look like this: 
+
+`scope = list(lower = fit.small, upper = fit.full)`.
+
+The next parameter in Stepwise is `direction =`. The default is `"backward`, which will do a backward selection and will **ONLY** eliminate non-significant predictors, but will **NOT** add any predictors. `"forward` will **ONLY** add predictors, but will not eliminate any predictors.
+
+Let's use `direction = "stepwise"`, which will do both, remove and add. Since we are starting with **fit.full** there is no option but to go backwards, eliminating non-significant predictors. But if one of the predictors removed were to become significant if included, it will be added back at some point.
+
+**Technical Note:** the default test when comparing models in `step()` is the **AIC**, which is an adjusted deviance measure, with little interpretation. For our purposes, it is better to use a standard statistical test like the **ANOVA F-test**. To change the default test to an **F-Test**, include the `test = "F"` parameter. Note, this is NOT F for false, but "F" in quotes as the letter F, which is the name of the test. This test will use **p < 0.15** as the default criterion to add and remove variables. Any included variable with a p >= 0.15 will be removed from the model. Any excluded variable that would have a significance of p < 0.15 if included in the model will be added back.
+
+Save the resulting `step()` object with the name **fit.step.15p**. Then display it using the `summary()` function.
+
+```{r}
+fit.step.15p <- step(fit.full,
+ scope = list(lower=fit.small,
+ upper=fit.full),
+ direction = "both",
+ test = "F")
+
+```
+
+**Technical Note:** Notice two things in the output above:
+
+(1) All predictors retained in the model have a significance of p < 0.15. As we know, significant predictors are the ones with p < 0.05. The p < 0.15 is simply a significance criteria for which variables to retain in the model. In other words, predictors with significance levels at p >= 0.15 are dropped from the model. 
+
+(2) fat and carb are retained in the model, and would be retained even if their p-values were >= 0.15. This is so because it is in the `lower =` parameter, as your manager wanted.
+
+**Another Technical Note:** 
+
+p < 0.15 is a good criterion for variable inclusion and removal. Of course, we are interested in significant predictors at the p < 0.05 level, but it is important to retain marginally significant predictors as control variables. If you want a larger model, you can change the selection threshold to p < 0.20 or even higher. If you want a smaller model, you can use a more restrictive threshod like p < 0.10 or smaller. You can control this with a parameter `k =`. **k** is the **Chi-Square** equivalent to the p-value. The default in `step()` is **k = 2**, which is approximately equivalent to **p < 0.15**. 
+
+**4.2** Let's change the addition/removal significance value from p < 0.15 to p < 0.05. First, we need to find out the Chi-Square equivalent to p < 0.05. To do this, enter `qchisq(0.05, 1, lower.tail = F)`. Save this result in a variable named **kval** and display its result. You should get **k = 3.84**. Then set the **k** parameter to **3.84** at the end of the `scope()` function (`k = 3.84`). Better yet, use `k = kval`, so that your script self-adjusts if you use a different value for **kval**. The re-fit **fit.step** but this time save the model as **fit.step.05p**
+
+```{r}
+summary(fit.step.15p)
+
+kval <- qchisq(0.05, 1, lower.tail = F)
+kval
+
+fit.step.05p <- step(fit.full,
+ scope = list(lower=fit.small,
+ upper=fit.full),
+ direction = "both",
+ test = "F",
+ k = kval)
+summary(fit.step.05p)
+```
+
+**4.3** Answer briefly: what is the difference in the final model when using p < 0.05 rather than p < 0.15 as the inclusion/removal criterion?    
+         
+**Answer:**    
+
+p < 0.05 (k = 3.84) produced a much smaller model, which has four predictors because it is more strict in its criteria for inclusion of predictors while p < 0.15 (k = 2) produced a larger model with five predictors.
+
+
+## 5. Re-testing for Multicollinearity Testing
+
+**5.1** Now that we have 2 reduced models identified by **stepwise** regression, compute the CI (`cond.index()` the parameter `data = Pizza`) and VIF (`vif()`) for each of the two models.
+
+```{r}
+cond.index(fit.step.15p, data = pizza)
+vif(fit.step.15p)
+
+
+cond.index(fit.step.05p, data = pizza)
+vif(fit.step.05p)
+```
+
+**5.2** What is your general conclusion from this analysis? Does any model solve the multicollinearity issue? **Technical tip**: the goal is to find the largest possible model without severe multicollinearity.     
+    
+**Answer:**
+
+In `fit.step.15p`, there is still high multi-collinearity (CI = 3,628.8) above 50. Additionally, all VIFs are also above 10. The multi-collinearity is reduced in `fit.step.05p` (CI = 71.7) although it is still greater than 50.
+
+
+```{r}
+# Done for you
+
+fit.better <- lm(cal ~ mois + fat + ash, data = pizza)
+cond.index(fit.better, data = pizza)
+vif(fit.better)
+summary(fit.better)
+
+# This final model only has significant predictors and no severe multi-collinearity. If your manager insists in keeping carb in the model, you need to explain that the model will have more than tolerable variance, due to multi-collinearity. But you can still use it for interpretation. But if you need to make accurate predictions, I would use the fit.better model.
+```
